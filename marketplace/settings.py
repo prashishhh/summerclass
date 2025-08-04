@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 import os
+import dj_database_url
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -26,7 +28,11 @@ SECRET_KEY = 'django-insecure-*!fc60jqmx2^queogk5&zxub6%+lx)$o*ua&_4ij@c56=pl+!@
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'summerclass-crjx.onrender.com',  # Render URL
+    '127.0.0.1',                      # for local development
+    'localhost',                     # optional
+]
 
 
 # Application definition
@@ -43,6 +49,7 @@ INSTALLED_APPS = [
     'blog.apps.BlogConfig', # Blog app
     'pages.apps.PagesConfig', # Pages App
     'sitesetting.apps.SitesettingConfig', # Site Setting app
+    
 ]
 
 MIDDLEWARE = [
@@ -53,6 +60,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'marketplace.urls'
@@ -81,11 +89,11 @@ WSGI_APPLICATION = 'marketplace.wsgi.application'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': dj_database_url.config(
+        default=os.environ.get('DATABASE_URL')
+    )
 }
+
 
 
 # Password validation
@@ -128,6 +136,10 @@ STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]
 
+STATIC_ROOT = BASE_DIR / 'staticfiles'  # destination for collectstatic
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
@@ -136,3 +148,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Media File Configurations
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://summerclass-crjx.onrender.com',
+]
