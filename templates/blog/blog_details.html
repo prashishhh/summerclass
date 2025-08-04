@@ -1,0 +1,26 @@
+{% extends 'master/base.html' %}
+{% load static %}
+{% block content %}
+<div class="card">
+  <div class="card-body">
+    <h2>{{ blog.title }}</h2>
+    {% if blog.blog_image %}
+        <a href="{% url 'blog_detail' blog.pk %}">
+          <img 
+            src="{{ blog.blog_image.url }}"
+            class="card-img-top"
+            alt="{{ blog.title }}"
+          />
+        </a>
+        {% else %}
+        <img 
+          src="{% static 'images/default.jpg' %}"
+          class="card-img-top"
+          alt="No image available"
+        />
+        {% endif %}
+    <p>{{ blog.content }}</p>
+    <a href="{% url 'blogs' %}" class="btn btn-secondary mt-3">← Back to Blogs</a>
+  </div>
+</div>
+{% endblock %}

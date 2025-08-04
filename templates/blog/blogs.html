@@ -1,0 +1,30 @@
+{% extends 'master/base.html' %}
+{% load static %}
+{% block content %}
+<h2 class="mb-4">All Blogs</h2>
+<div class="list-group">
+  {% for blog in blogs %}
+    <a href="{% url 'blog_detail' blog.pk %}" class="list-group-item list-group-item-action">
+      {{ blog.title }}
+    </a>
+    {% if blog.blog_image %}
+        <a href="{% url 'blog_detail' blog.pk %}">
+          <img 
+            src="{{ blog.blog_image.url }}"
+            class="card-img-top"
+            alt="{{ blog.title }}"
+          />
+        </a>
+        {% else %}
+        <img 
+          src="{% static 'images/default.jpg' %}"
+          class="card-img-top"
+          alt="No image available"
+        />
+        {% endif %}
+    <a href="{% url 'blog_detail' blog.pk %}" class="list-group-item list-group-item-action">
+      {{ blog.title }}
+    </a>
+  {% endfor %}
+</div>
+{% endblock %}
