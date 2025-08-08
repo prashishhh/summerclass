@@ -29,7 +29,7 @@ SECRET_KEY = 'django-insecure-*!fc60jqmx2^queogk5&zxub6%+lx)$o*ua&_4ij@c56=pl+!@
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    'summerclass-crjx.onrender.com',  # Render URL
+    'summerclass-ghxx.onrender.com',  # Render URL
     '127.0.0.1',                      # for local development
     'localhost',                     # optional
 ]
@@ -87,6 +87,13 @@ WSGI_APPLICATION = 'marketplace.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
+
+# DATABASES = {
+#    'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
 
 DATABASES = {
     'default': dj_database_url.config(
@@ -150,5 +157,5 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 CSRF_TRUSTED_ORIGINS = [
-    'https://summerclass-crjx.onrender.com',
+    'https://summerclass-ghxx.onrender.com',
 ]
