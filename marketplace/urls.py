@@ -23,6 +23,24 @@ from django.conf import settings
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.home, name='home'), # Home Page
+
+    # User Pages
+    path('register/', views.user_register, name='register'),
+    path('login/', views.user_login, name='login'), # Login Page
+    path('dashboard/', views.user_dashboard, name='dashboard'), # Dashboard Page
+    path('change-password/', views.change_password, name='change_password'), # Change Password page
+    path('edit-profile/', views.edit_profile, name='edit-profile'),
+
+    # Cart
+    path('cart/', views.cart, name='cart'),
+
+    # Orders
+    path('my-orders/', views.my_orders, name='my_orders'),
+    path('checkout/', views.checkout, name='checkout'),
+    path('place-order/', views.place_order, name='place_order'),
+    path('order-complete/', views.order_complete, name='order_complete'),
+
+
     path('products/', include('products.urls')), # Products
     path('blog/', include('blog.urls')), # Blog 
     path('pages/', include('pages.urls')), # Pages

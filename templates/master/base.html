@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -10,28 +11,27 @@
     />
 
     <title>Islington MarketPlace</title>
-    <meta name="description" content="Islington MarketPlace">
-    <meta name="keywords" content="Islington MarketPlace, Islington">
+    <meta name="description" content="Islington MarketPlace" />
+    <meta name="keywords" content="Islington MarketPlace, Islington" />
 
-    
-    <meta property="og:image" content="https://mohit-bucket.s3.us-east-1.amazonaws.com/media/photos/logos/Logo1_kQwoYga.PNG">
-    
+    <meta
+      property="og:image"
+      content="https://mohit-bucket.s3.us-east-1.amazonaws.com/media/photos/logos/Logo1_kQwoYga.PNG"
+    />
 
-    
     <link
       href="https://mohit-bucket.s3.us-east-1.amazonaws.com/media/photos/favicons/favicon.ico"
       rel="shortcut icon"
       type="image/x-icon"
     />
-    
 
     <!-- Open Graph for social media -->
-    <meta property="og:title" content="Islington MarketPlace">
-    <meta property="og:description" content="Islington MarketPlace">
+    <meta property="og:title" content="Islington MarketPlace" />
+    <meta property="og:description" content="Islington MarketPlace" />
 
     <!-- jQuery -->
     <script
-      src="/static/js/jquery-2.0.0.min.js"
+      src="{/static/js/jquery-2.0.0.min.js}"
       type="text/javascript"
     ></script>
 
@@ -40,11 +40,7 @@
       src="/static/js/bootstrap.bundle.min.js"
       type="text/javascript"
     ></script>
-    <link
-      href="/static/css/bootstrap.css"
-      rel="stylesheet"
-      type="text/css"
-    />
+    <link href="/static/css/bootstrap.css" rel="stylesheet" type="text/css" />
 
     <!-- Font awesome 5 -->
     <link
@@ -75,9 +71,9 @@
     </script>
   </head>
   <body>
-    {% include 'includes/header.html %'}
-    {% block content %}
-    {% endblock %}
+    {% include 'includes/header.html' %} 
+    {% block content %} 
+    {% endblock %} 
     {% include 'includes/footer.html' %}
   </body>
-  </html>
+</html>
