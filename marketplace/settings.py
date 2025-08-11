@@ -32,8 +32,8 @@ ALLOWED_HOSTS = [
     'summerclass-ghxx.onrender.com',  # Render URL
     '127.0.0.1',                      # for local development
     'localhost',   
-    'prashishsapkota.com.np'
-    'www.prashishsapkota.com.np'                  # optional
+    'prashishsapkota.com.np',
+    'www.prashishsapkota.com.np',              # optional
 ]
 
 
