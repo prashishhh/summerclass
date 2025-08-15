@@ -41,7 +41,7 @@ urlpatterns = [
     path('order-complete/', views.order_complete, name='order_complete'),
 
 
-    path('products/', include('products.urls')), # Products
+    path('store/', include('products.urls')), # Products
     path('blog/', include('blog.urls')), # Blog 
     path('pages/', include('pages.urls')), # Pages
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

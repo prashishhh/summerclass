@@ -1,109 +1,6 @@
 {% extends 'master/base.html' %} 
 {% load static %} 
 {% block content %}
-  <section class="header-main border-bottom">
-    <div class="container">
-      <div class="row align-items-center">
-        <div class="col-lg-2 col-md-3 col-6">
-          <a href="/" class="brand-wrap">
-            
-            <img class="logo" src="https://mohit-bucket.s3.us-east-1.amazonaws.com/media/photos/logos/Logo1_kQwoYga.PNG" />
-            
-          </a>
-          <!-- brand-wrap.// -->
-        </div>
-        <div class="col-lg col-sm col-md col-6 flex-grow-0">
-          <div class="category-wrap dropdown d-inline-block float-right">
-            <button
-              type="button"
-              class="btn btn-primary dropdown-toggle"
-              data-toggle="dropdown"
-            >
-              <i class="fa fa-bars"></i> All category
-            </button>
-            <div class="dropdown-menu">
-              <a class="dropdown-item" href="/store/"
-                >All Products
-              </a>
-              
-              <a class="dropdown-item" href="/store/category/tshirt/"
-                >Tshirt
-              </a>
-              
-              <a class="dropdown-item" href="/store/category/electronics/"
-                >Electronics
-              </a>
-              
-              <a class="dropdown-item" href="/store/category/home-living/"
-                >Home &amp; Living
-              </a>
-              
-              <a class="dropdown-item" href="/store/category/books/"
-                >Books
-              </a>
-              
-              <a class="dropdown-item" href="/store/category/accessories/"
-                >Accessories
-              </a>
-              
-            </div>
-          </div>
-          <!-- category-wrap.// -->
-        </div>
-        <!-- col.// -->
-        <a href="/store/" class="btn btn-outline-primary">Store</a>
-        <div class="col-lg col-md-6 col-sm-12 col">
-          <form action="#" class="search">
-            <div class="input-group w-100">
-              <input
-                type="text"
-                class="form-control"
-                style="width: 60%"
-                placeholder="Search"
-              />
-
-              <div class="input-group-append">
-                <button class="btn btn-primary" type="submit">
-                  <i class="fa fa-search"></i>
-                </button>
-              </div>
-            </div>
-          </form>
-          <!-- search-wrap .end// -->
-        </div>
-        <!-- col.// -->
-        <div class="col-lg-3 col-sm-6 col-8 order-2 order-lg-3">
-          <div class="d-flex justify-content-end mb-3 mb-lg-0">
-            <div class="widget-header">
-              <small class="title text-muted">Welcome guest!</small>
-              <div>
-                <a href="/login/">Login</a>
-                <span class="dark-transp"> | </span>
-                <a href="/register/"> Register</a>
-                <span class="dark-transp"> | </span>
-                <a href="/dashboard/"> Dashboard</a>
-              </div>
-            </div>
-            <a href="/cart/" class="widget-header pl-3 ml-3">
-              <div class="icon icon-sm rounded-circle border">
-                <i class="fa fa-shopping-cart"></i>
-              </div>
-              <span class="badge badge-pill badge-danger notify">0</span>
-            </a>
-          </div>
-          <!-- widgets-wrap.// -->
-        </div>
-        <!-- col.// -->
-      </div>
-      <!-- row.// -->
-    </div>
-    <!-- container.// -->
-  </section>
-  <!-- header-main .// -->
-</header>
-<!-- section-header.// -->
- 
-    
 <section class="section-content padding-y bg">
   <div class="container">
     <!-- ============================ COMPONENT 1 ================================= -->
@@ -112,7 +9,9 @@
         <aside class="col-md-6">
           <article class="gallery-wrap">
             <div class="img-big-wrap">
-              <a href="#"><img src="https://mohit-bucket.s3.us-east-1.amazonaws.com/media/photos/products/White_Tshirt.webp" /></a>
+              <a href="{{ product.product_image.url }}">
+                <img src="{{ product.product_image.url }}" />
+              </a>
             </div>
             <!-- img-big-wrap.// -->
           </article>
@@ -120,14 +19,14 @@
         </aside>
         <main class="col-md-6 border-left">
           <article class="content-body">
-            <h2 class="title">Basic White T-Shirt</h2>
+            <h2 class="title">{{ product.name }}</h2>
 
             <div class="mb-3">
-              <var class="price h4">Rs.2000</var>
+              <var class="price h4">Rs.{{ product.price }}</var>
             </div>
 
             <p>
-              Basic White T-Shirt
+              {{ product.name }}
             </p>
 
             <hr />
@@ -229,4 +128,5 @@
   <!-- container .//  -->
 </section>
 <!-- ========================= SECTION CONTENT END// ========================= -->
+
 {% endblock %}

@@ -79,6 +79,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'pages.context_processors.pages_links', # context processor of pages app
                 'sitesetting.context_processors.site_settings', # Context Processor of Site Setting app
+                'products.context_processors.category_links', # Context Processor of Product App
             ],
         },
     },
