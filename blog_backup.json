@@ -1,0 +1,52 @@
+[
+{
+  "model": "blog.category",
+  "pk": 1,
+  "fields": {
+    "name": "Technology"
+  }
+},
+{
+  "model": "blog.category",
+  "pk": 2,
+  "fields": {
+    "name": "Health"
+  }
+},
+{
+  "model": "blog.blog",
+  "pk": 1,
+  "fields": {
+    "title": "The Future of AI: What to Expect in the Next Decade",
+    "author": "Girish Raj Thapa",
+    "content": "Artificial Intelligence is evolving rapidly. In the next decade, we can expect significant advancements in natural language processing, autonomous vehicles, and healthcare applications. AI will continue to shape industries, creating both opportunities and challenges for the workforce and society.",
+    "category": 1,
+    "created_at": "2025-07-11T03:20:08Z",
+    "blog_image": "photos/blogs/ai_future.png"
+  }
+},
+{
+  "model": "blog.blog",
+  "pk": 2,
+  "fields": {
+    "title": "How 5G is Transforming the Digital World",
+    "author": "Girish Raj Thapa",
+    "content": "The rollout of 5G technology is more than just faster internet—it’s a revolution in connectivity. With ultra-low latency and massive bandwidth, 5G is enabling innovations like smart cities, autonomous vehicles, and real-time remote surgeries. As more countries adopt 5G infrastructure, the digital experience for users and businesses is set to reach new heights.",
+    "category": 1,
+    "created_at": "2025-07-11T03:21:25Z",
+    "blog_image": "photos/blogs/fiveg.png"
+  }
+},
+{
+  "model": "blog.blog",
+  "pk": 3,
+  "fields": {
+    "title": "10 Simple Habits for a Healthier Life",
+    "author": "Girish Raj Thapa",
+    "content": "Maintaining a healthy lifestyle doesn’t have to be complicated. Start with small steps: drink enough water, walk daily, eat whole foods, get quality sleep, and take time to relax. These simple habits can lead to long-term health benefits.",
+    "category": 2,
+    "created_at": "2025-07-11T03:22:16Z",
+    "blog_image": "photos/blogs/habits.png"
+  }
+}
+]

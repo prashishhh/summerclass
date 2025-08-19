@@ -51,6 +51,8 @@ INSTALLED_APPS = [
     'blog.apps.BlogConfig', # Blog app
     'pages.apps.PagesConfig', # Pages App
     'sitesetting.apps.SitesettingConfig', # Site Setting app
+    'accounts.apps.AccountsConfig',
+    
     
 ]
 
@@ -160,5 +162,7 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 CSRF_TRUSTED_ORIGINS = [
-    'https://summerclass-ghxx.onrender.com',
+    'https://summerclass-ghxx.onrender.com', 
 ]
+
+AUTH_USER_MODEL = 'accounts.Account'

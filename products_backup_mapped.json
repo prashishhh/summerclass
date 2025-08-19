@@ -1,0 +1,126 @@
+[
+  {
+    "model": "products.category",
+    "pk": 1,
+    "fields": {
+      "name": "Cloths",
+      "slug": "cloths",
+      "description": "",
+      "category_image": "",
+      "created_date": "2025-08-11T04:10:14Z",
+      "updated_date": "2025-08-11T04:10:14Z",
+      "status": true
+    }
+  },
+  {
+    "model": "products.category",
+    "pk": 2,
+    "fields": {
+      "name": "Sneakers",
+      "slug": "sneakers",
+      "description": "",
+      "category_image": "",
+      "created_date": "2025-08-11T04:10:14Z",
+      "updated_date": "2025-08-11T04:10:14Z",
+      "status": true
+    }
+  },
+  {
+    "model": "products.category",
+    "pk": 3,
+    "fields": {
+      "name": "Books",
+      "slug": "books",
+      "description": "",
+      "category_image": "",
+      "created_date": "2025-08-11T04:13:01Z",
+      "updated_date": "2025-08-11T04:12:33Z",
+      "status": true
+    }
+  },
+  {
+    "model": "products.product",
+    "pk": 1,
+    "fields": {
+      "slug": "classic-white-cotton-shirt",
+      "price": 1500.0,
+      "description": "A timeless classic — this white cotton shirt is perfect for both casual and formal wear. Made from breathable, high-quality cotton, it offers comfort and durability with a clean and stylish look.",
+      "stock": 15,
+      "status": true,
+      "category": 1,
+      "updated_date": "2025-08-15T03:09:42.156Z",
+      "product_name": "Classic White Cotton Shirt",
+      "images": "photos/products/Classic_White_Cotton_Shirt.png",
+      "created_date": "2025-07-04T04:42:51Z",
+      "is_approved": false
+    }
+  },
+  {
+    "model": "products.product",
+    "pk": 2,
+    "fields": {
+      "slug": "denim-jacket-blue-wash",
+      "price": 4500.0,
+      "description": "A versatile blue wash denim jacket with a vintage look. Made from 100% cotton with metal buttons and two front flap pockets. Ideal for layering in all seasons.",
+      "stock": 30,
+      "status": true,
+      "category": 1,
+      "updated_date": "2025-08-15T03:09:42.156Z",
+      "product_name": "Denim Jacket - Blue Wash",
+      "images": "photos/products/Denim_Jacket_-_Blue_Wash.png",
+      "created_date": "2025-07-04T04:45:17Z",
+      "is_approved": false
+    }
+  },
+  {
+    "model": "products.product",
+    "pk": 3,
+    "fields": {
+      "slug": "slim-fit-black-jeans",
+      "price": 3500.0,
+      "description": "Comfortable and stretchy black jeans designed with a modern slim fit. Perfect for everyday wear with durability and style.",
+      "stock": 20,
+      "status": true,
+      "category": 1,
+      "updated_date": "2025-08-15T03:09:42.156Z",
+      "product_name": "Slim Fit Black Jeans",
+      "images": "photos/products/slim_fit_black_jeans_YR5D0Wi.png",
+      "created_date": "2025-07-04T04:47:38Z",
+      "is_approved": false
+    }
+  },
+  {
+    "model": "products.product",
+    "pk": 4,
+    "fields": {
+      "slug": "nike-air-max-270",
+      "price": 12500.0,
+      "description": "The Nike Air Max 270 delivers visible cushioning under every step. Inspired by iconic Air Max models, it features a bold heel unit and sleek design perfect for all-day comfort and streetwear style. Breathable mesh upper and dual-density foam ensure a smooth, responsive ride.",
+      "stock": 17,
+      "status": true,
+      "category": 2,
+      "updated_date": "2025-08-15T03:09:42.156Z",
+      "product_name": "Nike Air Max 270",
+      "images": "photos/products/nike_airmax_270_IQuipup.png",
+      "created_date": "2025-07-11T03:38:09.759Z",
+      "is_approved": false
+    }
+  },
+  {
+    "model": "products.product",
+    "pk": 5,
+    "fields": {
+      "slug": "harry-potter-and-the-sorcerers-stone",
+      "price": 1200.0,
+      "description": "The first book in the globally bestselling Harry Potter series by J.K. Rowling. Follow Harry as he discovers he’s a wizard, attends Hogwarts School of Witchcraft and Wizardry, and faces the dark wizard who killed his parents. A magical tale of friendship, courage, and adventure.",
+      "stock": 25,
+      "status": true,
+      "category": 3,
+      "updated_date": "2025-08-15T03:09:42.156Z",
+      "product_name": "Harry Potter and the Sorcerer’s Stone",
+      "images": "photos/products/Harry_Potter_and_the_Sorcerers_Stone.png",
+      "created_date": "2025-08-14T13:55:18.824Z",
+      "is_approved": false
+    }
+  }
+]

@@ -30,6 +30,9 @@ urlpatterns = [
     path('dashboard/', views.user_dashboard, name='dashboard'), # Dashboard Page
     path('change-password/', views.change_password, name='change_password'), # Change Password page
     path('edit-profile/', views.edit_profile, name='edit-profile'),
+    path('accounts/', include('accounts.urls')),
+
+    
 
     # Cart
     path('cart/', views.cart, name='cart'),

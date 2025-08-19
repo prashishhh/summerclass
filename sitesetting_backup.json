@@ -1,0 +1,15 @@
+[
+{
+  "model": "sitesetting.sitesetting",
+  "pk": 1,
+  "fields": {
+    "site_title": "MarketPlace",
+    "site_url": null,
+    "meta_description": "",
+    "meta_keywords": null,
+    "logo": "photos/logos/logo.PNG",
+    "favicon": "photos/favicons/favicon.png",
+    "copyright_text": "© 2025 MarketPlace. All rights reserved"
+  }
+}
+]
