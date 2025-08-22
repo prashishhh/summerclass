@@ -10,10 +10,8 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
-from pathlib import Path
 import os
-import dj_database_url
-
+from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -23,7 +21,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-*!fc60jqmx2^queogk5&zxub6%+lx)$o*ua&_4ij@c56=pl+!@'
+SECRET_KEY = 'django-insecure-ap7ufx1z&&7d!!*+y4l77jx-e7j=vl$d&2ow$jt1+#nttbn!ir'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -33,27 +31,30 @@ ALLOWED_HOSTS = [
     '127.0.0.1',                      # for local development
     'localhost',   
     'prashishsapkota.com.np',
-    'www.prashishsapkota.com.np',              # optional
+    'www.prashishsapkota.com.np', 
+    # For eSewa
+    # "http://127.0.0.1:8000"
 ]
 
+# For eSewa
+# SITE_URL = "http://127.0.0.1:8000"
 
 # Application definition
 
 INSTALLED_APPS = [
-    'jazzmin', # Admin Template Package
+    'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'products.apps.ProductsConfig', # Products apps
-    'blog.apps.BlogConfig', # Blog app
-    'pages.apps.PagesConfig', # Pages App
-    'sitesetting.apps.SitesettingConfig', # Site Setting app
+    'category.apps.CategoryConfig',
     'accounts.apps.AccountsConfig',
-    
-    
+    'store.apps.StoreConfig',
+    'sitesetting.apps.SitesettingConfig',
+    'banner.apps.BannerConfig',
+    'carts.apps.CartsConfig',
 ]
 
 MIDDLEWARE = [
@@ -65,6 +66,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
+
 ]
 
 ROOT_URLCONF = 'marketplace.urls'
@@ -79,9 +81,9 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'pages.context_processors.pages_links', # context processor of pages app
-                'sitesetting.context_processors.site_settings', # Context Processor of Site Setting app
-                'products.context_processors.category_links', # Context Processor of Product App
+                'category.context_processor.menu_links',
+                'sitesetting.context_processor.site_settings',
+                'carts.context_processors.counter',
             ],
         },
     },
@@ -89,23 +91,18 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'marketplace.wsgi.application'
 
+AUTH_USER_MODEL = 'accounts.Account'
+
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 DATABASES = {
-   'default': {
+    'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',  # Use SQLite for local development
     }
 }
-
-# DATABASES = {
-#     'default': dj_database_url.config(
-#         default=os.environ.get('DATABASE_URL')
-#     )
-# }
-
 
 
 # Password validation
@@ -142,14 +139,19 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [
-    BASE_DIR / 'static',
+    BASE_DIR / 'static',           # now safely points to static folder at root
 ]
 
 STATIC_ROOT = BASE_DIR / 'staticfiles'  # destination for collectstatic
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+
+# media files configuration
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
 
 
 # Default primary key field type
@@ -157,12 +159,22 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Media File Configurations
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
 
+from django.contrib.messages import constants as messages
+
+MESSAGE_TAGS = {
+    messages.DEBUG: 'secondary',
+    messages.INFO: 'info',
+    messages.SUCCESS: 'success',
+    messages.WARNING: 'warning',
+    messages.ERROR: 'danger',  # maps "error" → Bootstrap red
+}
 CSRF_TRUSTED_ORIGINS = [
     'https://summerclass-ghxx.onrender.com', 
 ]
 
-AUTH_USER_MODEL = 'accounts.Account'
+EMAIL_HOST =  'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'sapkotaprashish91@gmail.com'
+EMAIL_HOST_PASSWORD = 'rmej brev gllw aqgu'
+EMAIL_USE_TLS = True

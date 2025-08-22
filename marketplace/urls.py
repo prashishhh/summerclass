@@ -17,34 +17,19 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from . import views
-from django.conf.urls.static import static 
+from django.conf.urls.static import static
 from django.conf import settings
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', views.home, name='home'), # Home Page
-
-    # User Pages
-    path('register/', views.user_register, name='register'),
-    path('login/', views.user_login, name='login'), # Login Page
-    path('dashboard/', views.user_dashboard, name='dashboard'), # Dashboard Page
-    path('change-password/', views.change_password, name='change_password'), # Change Password page
-    path('edit-profile/', views.edit_profile, name='edit-profile'),
+    path('', views.home, name='home'),
+    path('store/', include('store.urls')),
     path('accounts/', include('accounts.urls')),
-
-    
-
-    # Cart
-    path('cart/', views.cart, name='cart'),
-
-    # Orders
-    path('my-orders/', views.my_orders, name='my_orders'),
-    path('checkout/', views.checkout, name='checkout'),
-    path('place-order/', views.place_order, name='place_order'),
-    path('order-complete/', views.order_complete, name='order_complete'),
+    # path('messages/', include('message.urls')),
+    path('cart/', include('carts.urls')),
+]
 
 
-    path('store/', include('products.urls')), # Products
-    path('blog/', include('blog.urls')), # Blog 
-    path('pages/', include('pages.urls')), # Pages
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -1,0 +1,111 @@
+{% extends 'master/base.html' %}
+{% load static %}
+
+{% block content %}
+<section class="section-content padding-y bg">
+  <div class="container">
+    <!-- ============================ PRODUCT ============================ -->
+    <div class="card">
+      <div class="row no-gutters">
+        <!-- Gallery -->
+        <aside class="col-md-6">
+          <article class="gallery-wrap p-3">
+            <div class="img-big-wrap text-center">
+              <a href="#">
+                <img
+                  class="img-fluid rounded"
+                  src="{% if product.images %}{{ product.images.url }}{% else %}{% static 'images/default-product.png' %}{% endif %}"
+                  alt="{{ product.product_name }}"
+                />
+              </a>
+            </div>
+          </article>
+        </aside>
+
+        <!-- Info / Purchase -->
+        <main class="col-md-6 border-left">
+          <form action="{% url 'add_cart' product.id %}" method="post" class="h-100 d-flex">
+            {% csrf_token %}
+            <article class="content-body p-4 flex-fill">
+              <h2 class="title mb-2">{{ product.product_name }}</h2>
+
+              <div class="mb-3">
+                <var class="price h4">Rs. {{ product.price }}</var>
+                {% if product.old_price %}
+                  <small class="text-muted ml-2"><s>Rs. {{ product.old_price }}</s></small>
+                {% endif %}
+              </div>
+
+              {% if product.description %}
+                <p class="text-muted">{{ product.description }}</p>
+              {% endif %}
+
+              <hr/>
+
+              {# ---- Color ---- #}
+              {% if colors %}
+              <div class="row mb-3">
+                <div class="col-12 item-option-select">
+                  <h6 class="mb-2">Choose Color</h6>
+                  <select name="color" class="form-control" required>
+                    <option value="" disabled selected>Select</option>
+                    {% for i in colors %}
+                      <option value="{{ i.variation_value|lower }}">{{ i.variation_value|capfirst }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+              {% endif %}
+
+              {# ---- Size ---- #}
+              {% if sizes %}
+              <div class="row mb-3">
+                <div class="col-12 item-option-select">
+                  <h6 class="mb-2">Select Size</h6>
+                  <select name="size" class="form-control">
+                    <option value="" disabled selected>Select</option>
+                    {% for i in sizes %}
+                      <option value="{{ i.variation_value|lower }}">{{ i.variation_value|capfirst }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+              {% endif %}
+
+              <hr/>
+
+              {# Add-to-cart / actions #}
+              {% include 'store/includes/new_buttons.html' %}
+            </article>
+          </form>
+        </main>
+      </div>
+    </div>
+    <!-- ============================ /PRODUCT ============================ -->
+
+    <br/>
+
+    <!-- Reviews (sample) -->
+    <div class="row">
+      <div class="col-md-9">
+        <header class="section-heading">
+          <h3>Customer Reviews</h3>
+        </header>
+
+        <article class="box mb-3">
+          <div class="icontext w-100">
+            <img src="{% static 'images/avatars/avatar1.jpg' %}" class="img-xs icon rounded-circle" alt="Avatar"/>
+            <div class="text">
+              <span class="date text-muted float-md-right">24.04.2020</span>
+              <h6 class="mb-1">Mike John</h6>
+            </div>
+          </div>
+          <div class="mt-3">
+            <p>Dummy comment…</p>
+          </div>
+        </article>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
