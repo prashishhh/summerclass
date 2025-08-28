@@ -28,6 +28,9 @@
   <!-- Site CSS -->
   <link href="{% static 'css/ui.css' %}" rel="stylesheet" type="text/css" />
   <link href="{% static 'css/responsive.css' %}" rel="stylesheet" media="only screen and (max-width: 1200px)" />
+  
+  <!-- Modern Design System CSS -->
+  <link href="{% static 'css/modern-design.css' %}" rel="stylesheet" type="text/css" />
 
   {# Page-specific CSS/HEAD additions #}
   {% block extra_head %}{% endblock %}
@@ -54,6 +57,9 @@
   <script src="{% static 'js/jquery-2.0.0.min.js' %}"></script>
   <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
   <script src="{% static 'js/script.js' %}"></script>
+  
+  <!-- Modern Design JavaScript -->
+  <script src="{% static 'js/modern-design.js' %}"></script>
 
   <script>
     // Page-safe jQuery ready

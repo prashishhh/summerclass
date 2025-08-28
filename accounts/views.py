@@ -8,6 +8,7 @@ from .forms import ProfileUpdateForm
 from store.forms import ProductForm
 from django.utils.text import slugify
 from store.models import Product
+from orders.models import Order, OrderProduct
 from django.core.paginator import Paginator
 from django.db import transaction
 from django.db.models import F
@@ -177,8 +178,24 @@ def account_activate(request, uidb64, token):
 @login_required(login_url = 'user_login')
 def user_dashboard(request):
     user = request.user
+    
     # Products posted by this user
     my_products_qs = Product.objects.filter(owner=user)
+    
+    # Orders received by this user (buyer)
+    my_orders_qs = Order.objects.filter(user=user, is_ordered=True)
+    
+    # Sales made by this user (seller)
+    my_sales_qs = OrderProduct.objects.filter(
+        product__owner=user, 
+        order__is_ordered=True
+    )
+    
+    # Calculate total sales amount
+    total_sales_amount = sum(
+        sale.product_price * sale.quantity 
+        for sale in my_sales_qs
+    )
     
     context = {
         # Product stats (seller side)
@@ -187,6 +204,16 @@ def user_dashboard(request):
         "my_products_pending": my_products_qs.filter(is_approved=False).count(),
         "my_products_active": my_products_qs.filter(status=True).count(),
         "my_products_inactive": my_products_qs.filter(status=False).count(),
+        
+        # Order stats (buyer side)
+        "received_orders_total": my_orders_qs.count(),
+        "total_orders": my_orders_qs.count(),
+        "recent_orders": my_orders_qs.order_by('-created_at')[:5],
+        
+        # Sales stats (seller side)
+        "total_sales": my_sales_qs.count(),
+        "total_sales_amount": total_sales_amount,
+        "recent_sales": my_sales_qs.order_by('-created_at')[:5],
         
     }
     return render(request, 'accounts/dashboard.html', context)
@@ -241,9 +268,58 @@ def edit_product(request, product_id):
     return render(request, "accounts/add_product.html", {"form": form})
 
 
-@login_required(login_url = 'user_login')
+@login_required(login_url='user_login')
 def my_orders(request):
-    return render(request, 'accounts/my_orders.html')
+    orders = Order.objects.filter(user=request.user, is_ordered=True).order_by('-created_at')
+    context = {
+        'orders': orders
+    }
+    return render(request, 'accounts/my_orders.html', context)
+
+@login_required(login_url='user_login')
+def my_sales(request):
+    data = (
+        OrderProduct.objects
+        .filter(product__owner=request.user, order__is_ordered=True)   # items for my products
+        .select_related('order', 'product', 'user')                   # optimize queries
+        .prefetch_related('variations')                               # load variations
+        .order_by('-created_at')
+    )
+    context = {
+        'data': data
+    }
+    return render(request, 'orders/my_sales.html', context)
+
+@login_required(login_url='user_login')
+def order_detail(request, order_id):
+    user = request.user
+
+    # buyer's orders
+    buyer_qs = Order.objects.filter(order_number=order_id, user=user)
+
+    # seller's orders (any product they own)
+    seller_qs = Order.objects.filter(
+        order_number=order_id,
+        orderproduct__product__owner=user
+    )
+
+    order = (buyer_qs | seller_qs).distinct().first()
+
+    if not order:
+        return render(request, 'master/404.html', status=404)
+
+    # fetch order products
+    order_detail = OrderProduct.objects.filter(order=order)
+    subtotal = 0
+    for i in order_detail:
+        subtotal += i.product_price * i.quantity
+
+    context = {
+        'order_detail': order_detail,
+        'order': order,
+        'subtotal': subtotal,
+    }
+    return render(request, 'orders/order_detail.html', context)
 
 @login_required(login_url = 'user_login')
 def add_product(request):

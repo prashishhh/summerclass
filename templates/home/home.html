@@ -1,4 +1,4 @@
-\{% extends "master/base.html" %}
+{% extends "master/base.html" %}
 {% load static %}
 
 {# ---------- Page-scoped CSS (namespaced) ---------- #}
@@ -112,6 +112,27 @@
   .foot-meta{border-top:1px solid #1f2937;padding:16px 24px;text-align:center;font-size:13px;color:#9ca3af}
   @media (max-width:800px){ .footer-inner{grid-template-columns:1fr 1fr} }
   @media (max-width:520px){ .footer-inner{grid-template-columns:1fr} }
+
+  /* Placeholder styles */
+  .banner-placeholder, .category-placeholder, .product-placeholder {
+    background: #f3f4f6;
+    border: 2px dashed #d1d5db;
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #6b7280;
+    font-size: 14px;
+    text-align: center;
+    padding: 20px;
+  }
+  
+  .banner-placeholder i, .category-placeholder i, .product-placeholder i {
+    font-size: 48px;
+    margin-bottom: 10px;
+    opacity: 0.5;
+  }
 </style>
 {% endblock %}
 
@@ -119,7 +140,7 @@
 {% block header %}
 <header class="header" id="hdr">
   <a class="brand" href="#">
-    <span class="logo" style="background-image:url('{% static "images/logo.png" %}');"></span>
+    <span class="logo" style="background-image:url('{% static "images/logo1.png" %}');"></span>
     <span>Islington Marketplace</span>
   </a>
 
@@ -159,47 +180,60 @@
 {# --- Hero carousel (Bootstrap) --- #}
 <section class="section-intro padding-y-sm">
   <div class="container">
-    <div id="bannerCarousel" class="carousel slide" data-ride="carousel">
-      <div class="carousel-inner">
-        {% for banner in banners %}
-          <div class="carousel-item {% if forloop.first %}active{% endif %}">
-            <img
-              src="{% if banner.banner_image %}{{ banner.banner_image.url }}{% else %}{% static 'images/default-banner.jpg' %}{% endif %}"
-              class="d-block w-100 img-fluid rounded"
-              alt="Banner {{ forloop.counter }}"
-            />
-          </div>
-        {% endfor %}
+    {% if banners %}
+      <div id="bannerCarousel" class="carousel slide" data-ride="carousel">
+        <div class="carousel-inner">
+          {% for banner in banners %}
+            <div class="carousel-item {% if forloop.first %}active{% endif %}">
+              {% if banner.banner_image %}
+                <img
+                  src="{{ banner.banner_image.url }}"
+                  class="d-block w-100 img-fluid rounded"
+                  alt="{{ banner.banner_image.name|default:'Banner' }}"
+                />
+              {% else %}
+                <div class="banner-placeholder">
+                  <i class="fas fa-image"></i>
+                  <span>Banner Image</span>
+                </div>
+              {% endif %}
+            </div>
+          {% endfor %}
+        </div>
+        <a class="carousel-control-prev" href="#bannerCarousel" role="button" data-slide="prev">
+          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+          <span class="sr-only">Previous</span>
+        </a>
+        <a class="carousel-control-next" href="#bannerCarousel" role="button" data-slide="next">
+          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+          <span class="sr-only">Next</span>
+        </a>
       </div>
-      <a class="carousel-control-prev" href="#bannerCarousel" role="button" data-slide="prev">
-        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-        <span class="sr-only">Previous</span>
-      </a>
-      <a class="carousel-control-next" href="#bannerCarousel" role="button" data-slide="next">
-        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-        <span class="sr-only">Next</span>
-      </a>
-    </div>
+    {% endif %}
   </div>
 </section>
 
 {# --- Dynamic Hero category cards --- #}
 <section class="stage" id="browse">
-  <ul class="hero-card-row" aria-label="Featured campus categories">
-    {% for category in categories %}
-      <li>
-        <a class="hero-card" href="{% url 'store' %}?category={{ category.slug }}" 
-           style="background-image:url('{% if category.cat_image %}{{ category.cat_image.url }}{% elif category.category_image %}{{ category.category_image.url }}{% elif category.image %}{{ category.image.url }}{% else %}{% static "images/default-category.jpg" %}{% endif %}');">
-          <div class="hero-overlay">
-            <div>
-              <div class="hero-kicker">{{ category.description|default:"Explore" }}</div>
-              <div class="hero-label">{{ category.category_name }}</div>
+  {% if categories %}
+    <ul class="hero-card-row" aria-label="Featured campus categories">
+      {% for category in categories %}
+        <li>
+          <a class="hero-card" href="{% url 'store' %}?category={{ category.slug|default:category.category_name|lower|slugify }}" 
+             style="background-image:url('{% if category.cat_image %}{{ category.cat_image.url }}{% elif category.category_image %}{{ category.category_image.url }}{% elif category.image %}{{ category.image.url }}{% else %}{% static "images/default-category.jpg" %}{% endif %}');">
+            <div class="hero-overlay">
+              <div>
+                <div class="hero-kicker">{{ category.description|default:"Explore" }}</div>
+                <div class="hero-label">{{ category.category_name|default:"Category" }}</div>
+              </div>
             </div>
-          </div>
-        </a>
-      </li>
-    {% empty %}
-      {# Fallback static categories if no dynamic categories available #}
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    {# Fallback static categories if no dynamic categories available #}
+    <ul class="hero-card-row" aria-label="Featured campus categories">
       <li>
         <a class="hero-card" href="{% url 'store' %}?category=clothes-accessories" 
            style="background-image:url('{% static "images/cards/tickets.png" %}');">
@@ -244,8 +278,8 @@
           </div>
         </a>
       </li>
-    {% endfor %}
-  </ul>
+    </ul>
+  {% endif %}
 </section>
 
 {# --- Popular Products using new card design --- #}
@@ -256,34 +290,48 @@
       <a class="pro-view" href="{% url 'store' %}">View all products</a>
     </div>
 
-    <div class="pro-grid">
-      {% for product in products %}
-      <article class="pro-card">
-        <button class="pro-wish" type="button" aria-label="Save">
-          <svg viewBox="0 0 24 24" width="22" height="22" fill="none">
-            <path d="M12 21s-7-4.35-7-10a4 4 0 0 1 7-2 4 4 0 0 1 7 2c0 5.65-7 10-7 10z"
-                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </button>
+    {% if products %}
+      <div class="pro-grid">
+        {% for product in products %}
+        <article class="pro-card">
+          <button class="pro-wish" type="button" aria-label="Save">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none">
+              <path d="M12 21s-7-4.35-7-10a4 4 0 0 1 7-2 4 4 0 0 1 7 2c0 5.65-7 10-7 10z"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
 
-        <a href="{{ product.get_url }}" class="pro-media">
-          <img
-            src="{% if product.images %}{{ product.images.url }}{% else %}{% static 'images/default-product.png' %}{% endif %}"
-            alt="{{ product.product_name }}">
-        </a>
+          <a href="{{ product.get_url }}" class="pro-media">
+            {% if product.images %}
+              <img
+                src="{{ product.images.url }}"
+                alt="{{ product.product_name|default:'Product' }}">
+            {% else %}
+              <div class="product-placeholder">
+                <i class="fas fa-box"></i>
+                <span>No Image</span>
+              </div>
+            {% endif %}
+          </a>
 
-        <a href="{{ product.get_url }}" class="pro-title">{{ product.product_name }}</a>
-        <div class="pro-meta">{{ product.category.category_name|default:"" }}</div>
+          <a href="{{ product.get_url }}" class="pro-title">{{ product.product_name|default:"Product Name" }}</a>
+          <div class="pro-meta">{{ product.category.category_name|default:"General" }}</div>
 
-        <div class="pro-bottom">
-          <div class="pro-price">Rs {{ product.price }}</div>
-          <a class="pro-btn" href="{{ product.get_url }}">Add to cart</a>
+          <div class="pro-bottom">
+            <div class="pro-price">Rs {{ product.price|default:"0" }}</div>
+            <a class="pro-btn" href="{{ product.get_url }}">Add to cart</a>
+          </div>
+        </article>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="text-center py-5">
+        <div class="product-placeholder">
+          <i class="fas fa-box-open"></i>
+          <span>No products available yet</span>
         </div>
-      </article>
-      {% empty %}
-        <p>No products yet.</p>
-      {% endfor %}
-    </div>
+      </div>
+    {% endif %}
   </div>
 </section>
 
@@ -296,7 +344,7 @@
 
       <div class="offer-grid">
         <div>
-          <div class="offer-title">{{ offer_product.product_name }}</div>
+          <div class="offer-title">{{ offer_product.product_name|default:"Special Offer" }}</div>
           <div class="offer-sub">
             {{ offer_product.description|default:"A student-favorite pick for campus life."|truncatechars:160 }}
           </div>
@@ -305,7 +353,7 @@
             {% if offer_product.old_price %}
               <div class="offer-old">Rs {{ offer_product.old_price }}</div>
             {% endif %}
-            <div class="offer-price">Rs {{ offer_product.price }}</div>
+            <div class="offer-price">Rs {{ offer_product.price|default:"0" }}</div>
           </div>
 
           <div class="offer-actions">
@@ -321,10 +369,17 @@
 
         <div class="offer-hero" aria-hidden="true">
           <div class="offer-arch"></div>
-          <img
-            src="{% if offer_product.images %}{{ offer_product.images.url }}{% else %}{% static 'images/default-product.png' %}{% endif %}"
-            alt="{{ offer_product.product_name }}"
-            class="offer-img-right">
+          {% if offer_product.images %}
+            <img
+              src="{{ offer_product.images.url }}"
+              alt="{{ offer_product.product_name|default:'Offer Product' }}"
+              class="offer-img-right">
+          {% else %}
+            <div class="product-placeholder">
+              <i class="fas fa-gift"></i>
+              <span>Offer Product</span>
+            </div>
+          {% endif %}
         </div>
 
         <div>
@@ -365,7 +420,7 @@
       <a href="#">+977 980-0000000</a>
     </div>
   </div>
-  <div class="foot-meta">© {{ now|date:"Y" }} Islington Marketplace. All rights reserved.</div>
+  <div class="foot-meta">© {% now "Y" %} Islington Marketplace. All rights reserved.</div>
 </footer>
 {% endblock %}
 

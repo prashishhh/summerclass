@@ -1,0 +1,19 @@
+{% autoescape off %}
+
+Hi {{ user.first_name }},
+
+YOUR ORDER HAS BEEN RECEIVED
+Order Number: {{ order.order_number }}
+
+Items:
+{% for item in items %}
+    {{ item.product.product_name }} x{{ item.quantity }} – {{ item.product_price }}
+{% endfor %}
+
+Total: {{ amount_paid }}
+
+Thanks for shopping with us!
+
+{% endautoescape %}
+
+

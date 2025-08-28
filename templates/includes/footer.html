@@ -1,22 +1,40 @@
-<!-- ========================= FOOTER ========================= -->
-<footer class="section-footer border-top">
-  <div class="container">
-    <section class="footer-bottom border-top row">
-      <div class="col-md-2">
-        <p class="text-muted">&copy {{site_setting.copyright}}</p>
-      </div>
-      <div class="col-md-8 text-md-center">
-        <span class="px-2">{{site_setting.site_url}}</span>
-        <span class="px-2">{{site_setting.phone_number}}</span>
-        <span class="px-2">{{site_setting.address}}</span>
-      </div>
-      <div class="col-md-2 text-md-right text-muted">
-        <i class="fab fa-lg fa-cc-visa"></i>
-        <i class="fab fa-lg fa-cc-paypal"></i>
-        <i class="fab fa-lg fa-cc-mastercard"></i>
-      </div>
-    </section>
+{# ---------- Homepage Footer (used across all pages) ---------- #}
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="foot-col">
+      <div class="foot-title">Islington Marketplace</div>
+      <p style="margin-top:10px;color:#9ca3af;max-width:520px">A student-first marketplace to buy, sell, and discover goods and services on campus.</p>
+    </div>
+    <div class="foot-col">
+      <h4>Browse</h4>
+      <a href="#popular">Popular</a>
+      <a href="#browse">Categories</a>
+      <a href="{% url 'store' %}">Sell an item</a>
+    </div>
+    <div class="foot-col">
+      <h4>Company</h4>
+      <a href="#about">About</a>
+      <a href="#contact">Contact</a>
+      <a href="#">Privacy</a>
+    </div>
+    <div class="foot-col">
+      <h4>Get in touch</h4>
+      <a href="mailto:hello@islington.market">hello@islington.market</a>
+      <a href="#">+977 980-0000000</a>
+    </div>
   </div>
-  <!-- //container -->
+  <div class="foot-meta">© {% now "Y" %} Islington Marketplace. All rights reserved.</div>
 </footer>
-<!-- ========================= FOOTER END // ========================= -->
+
+<style>
+  /* Footer - Exact same styles from homepage */
+  .footer{background:#111827;color:#e5e7eb;margin-top:60px}
+  .footer-inner{max-width:1200px;margin:0 auto;padding:36px 24px;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:24px}
+  .foot-title{font-weight:800;color:#fff}
+  .foot-col h4{color:#fff;font-size:14px;margin-bottom:10px}
+  .foot-col a{color:#e5e7eb;font-size:14px;display:block;padding:6px 0;text-decoration:none}
+  .foot-col a:hover{color:#fff}
+  .foot-meta{border-top:1px solid #1f2937;padding:16px 24px;text-align:center;font-size:13px;color:#9ca3af}
+  @media (max-width:800px){ .footer-inner{grid-template-columns:1fr 1fr} }
+  @media (max-width:520px){ .footer-inner{grid-template-columns:1fr} }
+</style>

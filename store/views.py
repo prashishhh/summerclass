@@ -26,15 +26,42 @@ def store(request, category_slug=None):
     else:
         # Fetch all products where status is true and order by id 
         products = Product.objects.all().filter(status=True, is_approved=True).order_by('id')
-        
-    paginator = Paginator(products, 3) 
-    page = request.GET.get('page') 
-    paged_products = paginator.get_page(page)
+    
+    # Apply price range filter
+    min_price = request.GET.get('min_price')
+    max_price = request.GET.get('max_price')
+    
+    if min_price and min_price.isdigit():
+        products = products.filter(price__gte=int(min_price))
+    if max_price and max_price.isdigit():
+        products = products.filter(price__lte=int(max_price))
+    
+    # Apply sorting
+    sort_by = request.GET.get('sort', 'newest')
+    
+    if sort_by == 'price-low':
+        products = products.order_by('price')
+    elif sort_by == 'price-high':
+        products = products.order_by('-price')
+    elif sort_by == 'popular':
+        # Order by most viewed/popular (you can customize this logic)
+        products = products.order_by('-created_date')  # For now, using created_date as popularity
+    else:  # newest first (default)
+        products = products.order_by('-created_date')
+    
+    # Remove pagination - show all products
+    # paginator = Paginator(products, 3) 
+    # page = request.GET.get('page') 
+    # paged_products = paginator.get_page(page)
     product_count = products.count()
     
     context = {
-        'products': paged_products,
+        'products': products,  # Use products directly instead of paged_products
         'product_count': product_count,
+        'category_slug': category_slug,
+        'min_price': min_price or '',
+        'max_price': max_price or '',
+        'sort_by': sort_by,
     }
     
     return render(request, 'store/store.html', context)
