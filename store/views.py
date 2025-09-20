@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import Http404
-from . models import Product
+from . models import Product, ProductGallery
 from category.models import Category
 from carts.models import CartItem
 from carts.views import _cart_id
@@ -11,7 +11,8 @@ from django.conf import settings
 from django.core.mail import send_mail
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from . forms import ContactSellerForm
+from . forms import ContactSellerForm, ReviewForm
+from .models import Review
 
 def store(request, category_slug=None):
     categories = None
@@ -84,6 +85,26 @@ def product_detail(request, category_slug, product_slug):
     ).exists()
 
    
+    # Get product gallery images
+    product_gallery = ProductGallery.objects.filter(product_id=product.id)
+    
+    # Get order product info (if user has ordered this product)
+    order_product = None
+    if request.user.is_authenticated:
+        from orders.models import OrderProduct
+        order_product = OrderProduct.objects.filter(
+            user=request.user,
+            product=product
+        ).first()
+    
+    # Get reviews for this product
+    reviews = []
+    try:
+        reviews = Review.objects.filter(product=product, status=True).order_by('-created_date')
+    except:
+        # Reviews might not exist yet
+        pass
+
     colors = product.variations.filter(
         variation_category__iexact='color', is_active=True
     ).order_by('id')
@@ -92,12 +113,17 @@ def product_detail(request, category_slug, product_slug):
         variation_category__iexact='size', is_active=True
     ).order_by('id')
 
-    return render(request, 'store/product_detail.html', {
+    context = {
         'product': product,
         'in_cart': in_cart,
+        'order_product': order_product,
+        'reviews': reviews,
+        'product_gallery': product_gallery,
         'colors': colors,
         'sizes': sizes,
-    })
+    }
+    
+    return render(request, 'store/product_detail.html', context)
 
 
 
@@ -207,3 +233,27 @@ def message_seller(request, user_id):
         form = ContactSellerForm()
 
     return render(request, "messages/message_seller.html", {"seller": seller, "form": form})
+
+@login_required(login_url="user_login")
+def submit_review(request, product_id):
+    url = request.META.get('HTTP_REFERER')
+
+    if request.method != 'POST':
+        return redirect(url)
+
+    # If a review exists for this user+product, update it; otherwise create new
+    existing = Review.objects.filter(user_id=request.user.id, product_id=product_id).order_by('-id').first()
+
+    form = ReviewForm(request.POST, instance=existing) if existing else ReviewForm(request.POST)
+
+    if form.is_valid():
+        data = form.save(commit=False)
+        data.user_id = request.user.id
+        data.product_id = product_id
+        data.ip = request.META.get('REMOTE_ADDR')
+        data.save()
+        messages.success(request, f"Thank you! Your review has been {'updated' if existing else 'submitted'}.")
+    else:
+        messages.error(request, "Please correct the errors in your review.")
+
+    return redirect(url)

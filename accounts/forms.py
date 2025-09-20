@@ -1,6 +1,6 @@
 from django import forms
 from .models import Account
-from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.auth.forms import PasswordChangeForm, PasswordResetForm, SetPasswordForm
 
 
 class RegistrationForm(forms.ModelForm):
@@ -132,3 +132,68 @@ class CustomPasswordChangeForm(PasswordChangeForm):
     #         if self.cleaned_data.get("new_password1") and self.user.email.split("@")[0].lower() in self.cleaned_data["new_password1"].lower():
     #             self.add_error("new_password1", "New password should not contain parts of your email.")
     #     return cleaned
+
+
+class CustomPasswordResetForm(PasswordResetForm):
+    """
+    Custom password reset form with professional styling
+    """
+    email = forms.EmailField(
+        widget=forms.EmailInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Enter your email address',
+            'autocomplete': 'email',
+            'spellcheck': 'false',
+            'autocapitalize': 'off',
+            'autocorrect': 'off',
+        }),
+        label='Email Address'
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['email'].widget.attrs.update({
+            'class': 'form-control',
+            'placeholder': 'Enter your email address',
+            'autocomplete': 'email',
+        })
+
+
+class CustomSetPasswordForm(SetPasswordForm):
+    """
+    Custom set password form for password reset confirmation
+    """
+    new_password1 = forms.CharField(
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Enter new password',
+            'autocomplete': 'new-password',
+            'spellcheck': 'false',
+            'autocapitalize': 'off',
+            'autocorrect': 'off',
+        }),
+        label='New Password'
+    )
+    
+    new_password2 = forms.CharField(
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Confirm new password',
+            'autocomplete': 'new-password',
+            'spellcheck': 'false',
+            'autocapitalize': 'off',
+            'autocorrect': 'off',
+        }),
+        label='Confirm New Password'
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['new_password1'].widget.attrs.update({
+            'class': 'form-control',
+            'placeholder': 'Enter new password',
+        })
+        self.fields['new_password2'].widget.attrs.update({
+            'class': 'form-control',
+            'placeholder': 'Confirm new password',
+        })

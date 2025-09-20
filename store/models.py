@@ -1,5 +1,6 @@
 # store/models.py
 from django.db import models
+from django.db.models import Avg, Count
 from django.conf import settings
 from django.urls import reverse
 from category.models import Category
@@ -33,6 +34,22 @@ class Product(models.Model):
 
     def __str__(self):
         return self.product_name
+    
+    @property
+    def average_review(self):
+        """Calculate average rating from reviews"""
+        reviews = self.review_set.filter(status=True)
+        if reviews.exists():
+            result = reviews.aggregate(avg_rating=Avg('rating'))
+            avg = result['avg_rating']
+            if avg is not None:
+                return round(float(avg), 1)
+        return 0
+    
+    @property
+    def count_review(self):
+        """Count total reviews"""
+        return self.review_set.filter(status=True).count()
 
 
 # Use a tuple of tuples (stable ordering) – not a set
@@ -62,3 +79,28 @@ class Variation(models.Model):
 
     def __str__(self):
         return self.variation_value
+
+class ProductGallery(models.Model):
+    product = models.ForeignKey(Product, default=None, on_delete=models.CASCADE, related_name='gallery_images')
+    image = models.ImageField(upload_to='photos/products/', max_length=255)
+
+    def __str__(self):
+        return self.product.product_name
+
+    class Meta:
+        verbose_name = "product gallery"
+        verbose_name_plural = "product gallery"
+
+class Review(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    subject = models.CharField(max_length=100, blank=True)
+    description = models.TextField(max_length=500, blank=True)
+    rating = models.FloatField()
+    ip = models.CharField(max_length=20, blank=True)
+    status = models.BooleanField(default=True)
+    created_date = models.DateTimeField(auto_now_add=True)
+    updated_date = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.subject

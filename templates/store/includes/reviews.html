@@ -1,0 +1,90 @@
+{%load static%}
+<div class="col-md-9">
+  <div class="review-section">
+    <form action="{%url 'submit_review' product.id%}" method="POST" class="review-form">
+      {%csrf_token%}
+      <h5><i class="fas fa-edit"></i> Write Your Review</h5>
+      <div>
+        {% comment %} Rating {% endcomment %}
+        <label><i class="fas fa-star"></i> How do you rate this product?</label>
+        <div class="rate">
+          <input type="radio" name="rating" id="rating1" value="1" required> <label for="rating1" title="1 star"> </label>
+          <input type="radio" name="rating" id="rating2" value="2" required> <label for="rating2" title="2 stars"> </label>
+          <input type="radio" name="rating" id="rating3" value="3" required> <label for="rating3" title="3 stars"> </label>
+          <input type="radio" name="rating" id="rating4" value="4" required> <label for="rating4" title="4 stars"> </label>
+          <input type="radio" name="rating" id="rating5" value="5" required> <label for="rating5" title="5 stars"> </label>
+        </div>
+        
+        <label for="subject"><i class="fas fa-heading"></i> Review Title</label>
+        <input type="text" class="form-control" name="subject" id="subject" placeholder="Enter a title for your review">
+        
+        <label for="description"><i class="fas fa-comment"></i> Description</label>
+        <textarea name="description" id="description" rows="4" class="form-control" placeholder="Share your experience with this product..."></textarea>
+        
+        {%if user.is_authenticated%}
+          {%if order_product%}
+          <button type="submit" class="btn btn-primary">
+            <i class="fas fa-paper-plane"></i> Submit Review
+          </button>
+          {%else%}
+            <div class="alert alert-warning">
+              <i class="fas fa-exclamation-triangle"></i> You must purchase this product to post a review.
+            </div>
+          {%endif%}
+        {%else%}
+          <div class="alert alert-info">
+            <i class="fas fa-info-circle"></i> You must be logged in to post a review. 
+            <a href="{% url 'user_login' %}?next={{ request.path }}" class="btn btn-sm btn-outline-primary ml-2">Login</a>
+          </div>
+        {%endif%}
+      </div>
+      {% comment %} {%include 'includes/alerts.html'%} {% endcomment %}
+    </form>
+  </div>
+  <div class="section-heading">
+    <h3><i class="fas fa-comments"></i> Customer Reviews</h3>
+    <div class="avg-rating">
+      <i class="fa fa-star{% if product.average_review < 0.5 %}-o{% elif product.average_review < 1 %}-half-o{% endif %}"></i>
+      <i class="fa fa-star{% if product.average_review < 1.5 %}-o{% elif product.average_review < 2 %}-half-o{% endif %}"></i>
+      <i class="fa fa-star{% if product.average_review < 2.5 %}-o{% elif product.average_review < 3 %}-half-o{% endif %}"></i>
+      <i class="fa fa-star{% if product.average_review < 3.5 %}-o{% elif product.average_review < 4 %}-half-o{% endif %}"></i>
+      <i class="fa fa-star{% if product.average_review < 4.5 %}-o{% elif product.average_review < 5 %}-half-o{% endif %}"></i>
+      <span>{{product.count_review}} reviews</span>
+    </div>
+  </div>
+  
+  {% if reviews %}
+    {% for review in reviews %}
+    <div class="review-card">
+      <div class="review-header">
+        {% if review.user.profile_picture %}
+        <img src="{{review.user.profile_picture.url}}" class="review-avatar" alt="User Avatar" />
+        {% else %}
+        <img src="{% static 'images/avatars/avatar1.jpg' %}" class="review-avatar" alt="User Avatar" />
+        {% endif %}
+        <div class="review-user-info">
+          <h6 class="review-user-name">{{review.user.full_name}}</h6>
+          <p class="review-date">{{review.updated_date|date:"M. d, Y, g:i a"}}</p>
+          <div class="review-rating">
+            <i class="fa fa-star{% if review.rating >= 0.5 and review.rating < 1 %}-half-o{% elif review.rating < 1 %}-o{% endif %}" aria-hidden="true"></i>
+            <i class="fa fa-star{% if review.rating >= 1.5 and review.rating < 2 %}-half-o{% elif review.rating < 2 %}-o{% endif %}" aria-hidden="true"></i>
+            <i class="fa fa-star{% if review.rating >= 2.5 and review.rating < 3 %}-half-o{% elif review.rating < 3 %}-o{% endif %}" aria-hidden="true"></i>
+            <i class="fa fa-star{% if review.rating >= 3.5 and review.rating < 4 %}-half-o{% elif review.rating < 4 %}-o{% endif %}" aria-hidden="true"></i>
+            <i class="fa fa-star{% if review.rating >= 4.5 and review.rating < 5 %}-half-o{% elif review.rating < 5 %}-o{% endif %}" aria-hidden="true"></i>
+          </div>
+        </div>
+      </div>
+      {% if review.subject %}
+      <h6 class="review-title">{{review.subject}}</h6>
+      {% endif %}
+      <p class="review-description">{{review.description}}</p>
+    </div>
+    {% endfor %}
+  {% else %}
+    <div class="no-reviews">
+      <i class="fas fa-comment-slash"></i>
+      <h4>No reviews yet</h4>
+      <p>Be the first to review this product!</p>
+    </div>
+  {% endif %}
+</div>

@@ -14,8 +14,9 @@ from django.db import transaction
 from django.db.models import F
 from carts.models import Cart, CartItem
 # Password change
-from . forms import CustomPasswordChangeForm
+from . forms import CustomPasswordChangeForm, CustomPasswordResetForm, CustomSetPasswordForm
 from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth.views import PasswordResetView, PasswordResetConfirmView
 
 # Email verification
 from django.contrib.sites.shortcuts import get_current_site
@@ -286,9 +287,64 @@ def my_sales(request):
         .order_by('-created_at')
     )
     context = {
-        'data': data
+        'data': data,
+        'order_status_choices': OrderProduct.DELIVERY_CHOICES
     }
     return render(request, 'orders/my_sales.html', context)
+
+@login_required(login_url='user_login')
+def update_delivery_status(request, order_product_id):
+    item = get_object_or_404(
+        OrderProduct,
+        id=order_product_id,
+        product__owner=request.user
+    )
+
+    if request.method == "POST":
+        new_status = request.POST.get("status")
+        valid = dict(OrderProduct.DELIVERY_CHOICES)
+
+        if new_status not in valid:
+            messages.error(request, "Invalid status.")
+            return redirect("my_sales")
+
+        if item.delivery_status == new_status:
+            messages.info(request, f"Status already {valid[new_status]}.")
+            return redirect("my_sales")
+
+        item.delivery_status = new_status
+        item.save(update_fields=["delivery_status",])
+        
+        # notify buyer
+        order = item.order
+        buyer = order.user
+        status_label = valid[new_status]  # e.g. "Shipped"
+
+        mail_subject = f"Your order {order.order_number} is now {status_label}"
+
+        email_body = render_to_string("emails/delivery_status.html", {
+            "user": buyer,
+            "order": order,
+            "item": item,
+            "status": new_status,
+            "status_label": status_label,
+        })
+
+        try:
+            msg = EmailMessage(mail_subject, email_body, to=[buyer.email])
+            msg.content_subtype = "html"  # Sends as HTML
+            msg.send()
+        except Exception:
+            messages.warning(
+                request,
+                "Status updated, but we couldn't send the email notification."
+            )
+
+        messages.success(request, f"Updated to {valid[new_status]}.")
+        return redirect("my_sales")
+    
+    # If not POST, redirect to my_sales
+    return redirect("my_sales")
 
 @login_required(login_url='user_login')
 def order_detail(request, order_id):
@@ -374,3 +430,102 @@ def change_password(request):
     else:
         form = CustomPasswordChangeForm(request.user)
     return render(request, 'accounts/change_password.html', {'form': form})
+
+
+# Password Reset Views
+class CustomPasswordResetView(PasswordResetView):
+    """
+    Custom password reset view with professional styling
+    """
+    template_name = 'accounts/password_reset.html'
+    form_class = CustomPasswordResetForm
+    email_template_name = 'accounts/password_reset_email.txt'
+    subject_template_name = 'accounts/password_reset_subject.txt'
+    success_url = '/accounts/password-reset/done/'
+    html_email_template_name = 'accounts/password_reset_email.html'
+    
+    def form_valid(self, form):
+        # Send HTML email manually
+        from django.template.loader import render_to_string
+        from django.core.mail import EmailMultiAlternatives
+        from django.contrib.sites.shortcuts import get_current_site
+        
+        email = form.cleaned_data['email']
+        try:
+            user = Account.objects.get(email=email, is_active=True)
+        except Account.DoesNotExist:
+            # Don't reveal if email exists
+            pass
+        else:
+            # Send HTML email
+            current_site = get_current_site(self.request)
+            context = {
+                'user': user,
+                'domain': current_site.domain,
+                'site_name': current_site.name,
+                'protocol': 'https' if self.request.is_secure() else 'http',
+                'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                'token': default_token_generator.make_token(user),
+            }
+            
+            subject = 'Password Reset Request - ' + current_site.name
+            html_content = render_to_string('accounts/password_reset_email.html', context)
+            text_content = render_to_string('accounts/password_reset_email.txt', context)
+            
+            email_msg = EmailMultiAlternatives(subject, html_content, None, [email])
+            email_msg.content_subtype = "html"
+            email_msg.attach_alternative(text_content, "text/plain")
+            email_msg.send()
+        
+        # Add success message
+        messages.success(
+            self.request, 
+            "Password reset instructions have been sent to your email address."
+        )
+        return redirect(self.success_url)
+    
+    def form_invalid(self, form):
+        # Even for invalid forms, don't reveal if email exists
+        messages.success(
+            self.request, 
+            "Password reset instructions have been sent to your email address."
+        )
+        return redirect(self.success_url)
+    
+    def send_mail(self, subject_template_name, email_template_name, context, from_email, to_email, html_email_template_name=None, extra_email_context=None):
+        """
+        Send a django.core.mail.EmailMultiAlternatives to `to_email`.
+        """
+        from django.template.loader import render_to_string
+        from django.core.mail import EmailMultiAlternatives
+        
+        subject = render_to_string(subject_template_name, context)
+        # Email subject *must not* contain newlines
+        subject = ''.join(subject.splitlines())
+        
+        # Render both HTML and text versions
+        html_content = render_to_string('accounts/password_reset_email.html', context)
+        text_content = render_to_string('accounts/password_reset_email.txt', context)
+        
+        # Create the email with HTML as primary content
+        email = EmailMultiAlternatives(subject, html_content, from_email, [to_email])
+        email.content_subtype = "html"  # Set content type to HTML
+        email.attach_alternative(text_content, "text/plain")
+        email.send()
+
+
+class CustomPasswordResetConfirmView(PasswordResetConfirmView):
+    """
+    Custom password reset confirmation view
+    """
+    template_name = 'accounts/password_reset_confirm.html'
+    form_class = CustomSetPasswordForm
+    success_url = '/accounts/password-reset/complete/'
+    
+    def form_valid(self, form):
+        # Add success message
+        messages.success(
+            self.request, 
+            "Your password has been successfully reset. You can now log in with your new password."
+        )
+        return super().form_valid(form)

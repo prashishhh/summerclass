@@ -4,6 +4,7 @@ from .models import Order, Payment, OrderProduct
 class OrderProductInline(admin.TabularInline):
     model = OrderProduct
     readonly_fields = ('payment', 'user', 'product', 'quantity', 'product_price', 'ordered')
+    fields = ('product', 'quantity', 'product_price', 'delivery_status', 'ordered')
     extra = 0
 
 class OrderAdmin(admin.ModelAdmin):
@@ -13,6 +14,13 @@ class OrderAdmin(admin.ModelAdmin):
     list_per_page = 20
     inlines = [OrderProductInline]
 
+class OrderProductAdmin(admin.ModelAdmin):
+    list_display = ['product', 'user', 'order', 'quantity', 'delivery_status', 'product_price', 'ordered', 'created_at']
+    list_filter = ['delivery_status', 'ordered', 'created_at']
+    search_fields = ['product__product_name', 'user__first_name', 'user__last_name', 'order__order_number']
+    list_editable = ['delivery_status']
+    list_per_page = 20
+
 admin.site.register(Order, OrderAdmin)
 admin.site.register(Payment)
-admin.site.register(OrderProduct)
+admin.site.register(OrderProduct, OrderProductAdmin)

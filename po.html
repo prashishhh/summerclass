@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manpower Advertisement Creator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans:wght@400;700&family=Noto+Sans+Devanagari:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', 'Noto Sans', 'Noto Sans Devanagari', sans-serif;
+            background-color: #f0f2f5;
+        }
+        .step-indicator {
+            transition: all 0.3s ease-in-out;
+        }
+        .step-indicator.active {
+            background-color: #2563eb;
+            color: white;
+            border-color: #2563eb;
+        }
+        .step-indicator.completed {
+            background-color: #16a34a;
+            color: white;
+            border-color: #16a34a;
+        }
+        .form-section {
+            border-left: 3px solid #3b82f6;
+            padding-left: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .company-block {
+            background-color: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .ad-preview-container {
+            width: 12cm;
+            min-height: 5cm;
+            border: 1px solid #ccc;
+            background-color: white;
+            padding: 0.5cm;
+            margin: 0 auto;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transform-origin: top center;
+        }
+        .ad-preview-container table, .ad-preview-container th, .ad-preview-container td {
+            border: 1px solid black;
+            border-collapse: collapse;
+            font-size: 7pt;
+            padding: 1px 2px;
+            text-align: center;
+        }
+         .ad-preview-container .manpower-details {
+            font-size: 8pt;
+            line-height: 1.2;
+        }
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="antialiased text-gray-800">
+
+    <div id="app" class="container mx-auto p-4 md:p-8 max-w-7xl">
+        <header class="text-center mb-8">
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-900">Manpower Advertisement Creator</h1>
+            <p class="text-md text-gray-600 mt-2">Create print-ready manpower ads in a few simple steps.</p>
+        </header>
+
+        <!-- Step Indicator -->
+        <div class="flex items-center justify-center space-x-4 md:space-x-8 mb-8">
+            <div id="step-1-indicator" class="step-indicator active flex items-center justify-center w-12 h-12 rounded-full border-2 border-gray-300 font-bold text-lg">1</div>
+            <div class="flex-1 h-1 bg-gray-300 rounded-full"></div>
+            <div id="step-2-indicator" class="step-indicator flex items-center justify-center w-12 h-12 rounded-full border-2 border-gray-300 font-bold text-lg">2</div>
+            <div class="flex-1 h-1 bg-gray-300 rounded-full"></div>
+            <div id="step-3-indicator" class="step-indicator flex items-center justify-center w-12 h-12 rounded-full border-2 border-gray-300 font-bold text-lg">3</div>
+            <div class="flex-1 h-1 bg-gray-300 rounded-full"></div>
+            <div id="step-4-indicator" class="step-indicator flex items-center justify-center w-12 h-12 rounded-full border-2 border-gray-300 font-bold text-lg">4</div>
+        </div>
+        
+        <!-- Main Content Area -->
+        <div class="bg-white p-6 md:p-8 rounded-xl shadow-lg min-h-[500px]">
+
+            <!-- Step 1: Upload Document -->
+            <div id="step-1">
+                <h2 class="text-2xl font-semibold mb-4 text-center">Step 1: Upload Document</h2>
+                <p class="text-center text-gray-500 mb-6">Upload an approval letter or reference document (PDF, JPG, PNG).</p>
+                <div id="drop-zone" class="border-2 border-dashed border-gray-300 rounded-lg p-10 text-center cursor-pointer hover:border-blue-500 transition-colors">
+                    <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
+                        <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                    <p class="mt-2 text-gray-600">Drag & drop your file here</p>
+                    <p class="text-xs text-gray-500">or</p>
+                    <button type="button" class="mt-2 px-4 py-2 bg-blue-600 text-white rounded-md font-semibold hover:bg-blue-700">Click to upload</button>
+                    <input type="file" id="file-input" class="hidden" accept=".pdf,.jpg,.jpeg,.png">
+                </div>
+                <div id="upload-status" class="mt-4 text-center"></div>
+                <div id="ocr-loader" class="hidden flex-col items-center justify-center mt-6">
+                    <div class="loader"></div>
+                    <p class="mt-4 text-blue-600 font-medium">Extracting data with OCR... Please wait.</p>
+                </div>
+                 <div class="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-800">
+                    <strong>For Demonstration:</strong> Uploading "Approved Letter.pdf" auto-fills the first company block. For other files, the form will start with two empty company blocks for manual entry, matching the sample ad.
+                </div>
+            </div>
+
+            <!-- Step 2: Fill Form -->
+            <div id="step-2" class="hidden">
+                 <h2 class="text-2xl font-semibold mb-6 text-center">Step 2: Verify & Complete Ad Details</h2>
+                <form id="ad-form">
+                    <!-- General Ad Details -->
+                     <div class="form-section">
+                        <h3 class="text-xl font-semibold mb-4 text-gray-700">General Ad Details</h3>
+                        <label class="flex items-center">
+                            <input type="checkbox" name="isReAdvertisement" class="h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500" checked>
+                            <span class="ml-2 text-gray-700">This is a re-advertisement (पुन: बिज्ञापन)</span>
+                        </label>
+                    </div>
+
+                    <!-- Company List -->
+                    <div id="company-list">
+                        <!-- Company blocks will be dynamically inserted here -->
+                    </div>
+                    <button type="button" id="add-company-btn" class="mt-4 px-4 py-2 bg-indigo-600 text-white rounded-md font-semibold hover:bg-indigo-700">+ Add Another Company</button>
+                    
+                    <!-- Interview Details -->
+                    <div class="form-section mt-8">
+                        <h3 class="text-xl font-semibold mb-4 text-gray-700">Interview Details (अन्तरवार्ता)</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div><label class="block font-medium">Interview Date (अन्तरवार्ता मिति)</label><input type="date" name="interviewDate" class="w-full p-2 border rounded-md mt-1"></div>
+                             <div><label class="block font-medium">Interview Place (स्थान)</label><input type="text" name="interviewPlace" value="म्यानपावरको कार्यालयमा हुनेछ।" class="w-full p-2 border rounded-md mt-1"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Cost Details -->
+                    <div class="form-section">
+                        <h3 class="text-xl font-semibold mb-4 text-gray-700">Cost & Fee Details (लागत विवरण)</h3>
+                        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-4">
+                            <div>
+                                <label class="block font-medium text-sm">स्वदेशमा मेडिकल</label>
+                                <select name="medicalHome" class="w-full p-2 border rounded-md mt-1 text-sm">
+                                    <option value="कामदार आफैले">Worker Pays</option>
+                                    <option value="रोजगारदाताले">Employer Pays</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block font-medium text-sm">विदेशमा मेडिकल</label>
+                                 <select name="medicalAbroad" class="w-full p-2 border rounded-md mt-1 text-sm">
+                                    <option value="रोजगारदाताले">Employer Pays</option>
+                                    <option value="कामदार आफैले">Worker Pays</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block font-medium text-sm">जीवन बिमा</label>
+                                <select name="lifeInsurance" class="w-full p-2 border rounded-md mt-1 text-sm">
+                                    <option value="कामदार आफैले">Worker Pays</option>
+                                    <option value="रोजगारदाताले">Employer Pays</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block font-medium text-sm">सेवा शुल्क (रु.)</label>
+                                <input type="number" name="serviceCharge" value="10000" class="w-full p-2 border rounded-md mt-1 text-sm">
+                            </div>
+                        </div>
+                    </div>
+
+
+                     <div class="flex justify-between mt-8">
+                        <button type="button" id="back-to-upload-btn" class="px-6 py-2 bg-gray-600 text-white rounded-md font-semibold hover:bg-gray-700">Back</button>
+                        <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-md font-semibold hover:bg-blue-700">Generate Preview</button>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- Step 3: Preview Ad -->
+            <div id="step-3" class="hidden">
+                 <h2 class="text-2xl font-semibold mb-6 text-center">Step 3: Preview Advertisement</h2>
+                <div class="flex justify-center mb-4">
+                     <div class="w-full max-w-lg md:max-w-none md:w-auto overflow-x-auto">
+                        <div id="ad-preview" class="ad-preview-container">
+                            <!-- Ad content will be injected here -->
+                        </div>
+                    </div>
+                </div>
+                <div class="flex justify-between mt-8">
+                    <button type="button" id="re-edit-btn" class="px-6 py-2 bg-gray-600 text-white rounded-md font-semibold hover:bg-gray-700">Re-edit Form</button>
+                    <button type="button" id="confirm-ad-btn" class="px-6 py-2 bg-blue-600 text-white rounded-md font-semibold hover:bg-blue-700">Confirm & Proceed</button>
+                </div>
+            </div>
+
+            <!-- Step 4: Download -->
+            <div id="step-4" class="hidden">
+                 <div class="text-center">
+                    <svg class="mx-auto h-16 w-16 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <h2 class="text-2xl font-semibold mt-4">Advertisement Ready!</h2>
+                    <p class="text-gray-600 mt-2">Your print-ready advertisement has been generated successfully.</p>
+                    <p class="text-gray-600 mt-1">A copy has been saved to the system for admin review.</p>
+                    <button type="button" id="download-pdf-btn" class="mt-8 px-8 py-3 bg-green-600 text-white rounded-md font-bold text-lg hover:bg-green-700">
+                        Download PDF
+                    </button>
+                    <button type="button" id="create-new-btn" class="mt-4 px-6 py-2 bg-blue-100 text-blue-800 rounded-md font-semibold hover:bg-blue-200">
+                        Create Another Ad
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        let companyCounter = 0;
+
+        // --- State Management ---
+        const state = {
+            currentStep: 1,
+            adData: {}
+        };
+
+        // --- Element Caching ---
+        const steps = {
+            1: document.getElementById('step-1'),
+            2: document.getElementById('step-2'),
+            3: document.getElementById('step-3'),
+            4: document.getElementById('step-4'),
+        };
+        const indicators = {
+            1: document.getElementById('step-1-indicator'),
+            2: document.getElementById('step-2-indicator'),
+            3: document.getElementById('step-3-indicator'),
+            4: document.getElementById('step-4-indicator'),
+        };
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('file-input');
+        const uploadStatus = document.getElementById('upload-status');
+        const ocrLoader = document.getElementById('ocr-loader');
+        const adForm = document.getElementById('ad-form');
+        const companyList = document.getElementById('company-list');
+
+        // --- Navigation Logic ---
+        function navigateToStep(step) {
+            steps[state.currentStep].classList.add('hidden');
+            indicators[state.currentStep].classList.remove('active');
+            if (step > state.currentStep) {
+                indicators[state.currentStep].classList.add('completed');
+            }
+            state.currentStep = step;
+            steps[step].classList.remove('hidden');
+            indicators[step].classList.add('active');
+        }
+        
+        document.getElementById('back-to-upload-btn').addEventListener('click', () => navigateToStep(1));
+        document.getElementById('re-edit-btn').addEventListener('click', () => navigateToStep(2));
+        document.getElementById('confirm-ad-btn').addEventListener('click', () => navigateToStep(4));
+        document.getElementById('create-new-btn').addEventListener('click', () => {
+            adForm.reset();
+            companyList.innerHTML = '';
+            addCompanyBlock();
+            addCompanyBlock();
+            Object.values(indicators).forEach((ind, i) => {
+                ind.classList.remove('active', 'completed');
+                if (i === 0) ind.classList.add('active');
+            });
+            navigateToStep(1);
+        });
+
+        // --- File Upload Logic ---
+        dropZone.addEventListener('click', () => fileInput.click());
+        dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('border-blue-500', 'bg-blue-50'); });
+        dropZone.addEventListener('dragleave', () => dropZone.classList.remove('border-blue-500', 'bg-blue-50'));
+        dropZone.addEventListener('drop', e => {
+            e.preventDefault();
+            dropZone.classList.remove('border-blue-500', 'bg-blue-50');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                fileInput.files = files;
+                handleFileUpload(files[0]);
+            }
+        });
+        fileInput.addEventListener('change', e => {
+            if (e.target.files.length > 0) handleFileUpload(e.target.files[0]);
+        });
+
+        function handleFileUpload(file) {
+            uploadStatus.textContent = `File selected: ${file.name}`;
+            ocrLoader.classList.remove('hidden');
+            ocrLoader.classList.add('flex');
+            
+            setTimeout(() => {
+                companyList.innerHTML = ''; // Clear previous form state
+                if (file.name === 'Approved Letter.pdf') {
+                    populateFormWithSampleData();
+                } else {
+                    addCompanyBlock(); // Add two empty blocks for manual entry
+                    addCompanyBlock();
+                }
+                ocrLoader.classList.add('hidden');
+                ocrLoader.classList.remove('flex');
+                uploadStatus.textContent = '';
+                navigateToStep(2);
+            }, 2000);
+        }
+
+        function populateFormWithSampleData() {
+            const companyData = {
+                name: 'DESCON ENGINEERING',
+                country: 'UAE',
+                city: 'MUHAMMAD BIN ZAYED CITY',
+                preApprovalDate: '2025-08-18',
+                chalaniNo: '60243342',
+                ltNo: '329528',
+            };
+            const jobs = [
+                { post: 'Helper', male: 50, female: 0, salary: 1000.00, salaryNpr: 36626, qualification: 'सम्बन्धित काममा दक्ष' },
+                { post: 'Pipe Fitter', male: 50, female: 0, salary: 1500.00, salaryNpr: 54939, qualification: 'सम्बन्धित काममा दक्ष' },
+                { post: 'Scaffolder', male: 50, female: 0, salary: 1500.00, salaryNpr: 54939, qualification: 'सम्बन्धित काममा दक्ष' },
+                { post: 'RIGGERS', male: 50, female: 0, salary: 1500.00, salaryNpr: 54939, qualification: 'सम्बन्धित काममा दक्ष' }
+            ];
+            const companyNode = addCompanyBlock(companyData);
+            const jobListNode = companyNode.querySelector('.job-list');
+            jobListNode.innerHTML = ''; // Clear the default empty job
+            jobs.forEach(job => addJobEntry(jobListNode, job));
+        }
+
+        // --- Dynamic Form Logic (Companies & Jobs) ---
+        function addCompanyBlock(data = {}) {
+            companyCounter++;
+            const block = document.createElement('div');
+            block.className = 'company-block';
+            block.innerHTML = `
+                <div class="flex justify-between items-start mb-4">
+                    <h3 class="text-xl font-semibold text-gray-700">Employer Section ${companyCounter}</h3>
+                    <button type="button" class="remove-company-btn text-red-500 hover:text-red-700 font-semibold">Remove</button>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div><label class="block text-sm font-medium">Employer Country</label><input type="text" name="country" value="${data.country || ''}" class="w-full p-2 border rounded-md mt-1"></div>
+                    <div><label class="block text-sm font-medium">Employer Company</label><input type="text" name="company" value="${data.name || ''}" class="w-full p-2 border rounded-md mt-1"></div>
+                    <div><label class="block text-sm font-medium">City</label><input type="text" name="city" value="${data.city || ''}" class="w-full p-2 border rounded-md mt-1"></div>
+                    <div><label class="block text-sm font-medium">Pre-Approval Date</label><input type="date" name="preApprovalDate" value="${data.preApprovalDate || ''}" class="w-full p-2 border rounded-md mt-1"></div>
+                    <div><label class="block text-sm font-medium">Chalani No.</label><input type="text" name="chalaniNo" value="${data.chalaniNo || ''}" class="w-full p-2 border rounded-md mt-1"></div>
+                    <div><label class="block text-sm font-medium">LT No.</label><input type="text" name="ltNo" value="${data.ltNo || ''}" class="w-full p-2 border rounded-md mt-1"></div>
+                </div>
+                <hr class="my-6">
+                <h4 class="font-semibold text-gray-600 mb-3">Job Positions for this Employer</h4>
+                <div class="job-list space-y-3"></div>
+                <button type="button" class="add-job-btn mt-3 px-3 py-1.5 bg-green-600 text-white text-sm rounded-md font-semibold hover:bg-green-700">+ Add Position</button>
+            `;
+            companyList.appendChild(block);
+            const jobListNode = block.querySelector('.job-list');
+            addJobEntry(jobListNode); // Add one empty job by default
+            return block;
+        }
+
+        function addJobEntry(jobListNode, job = {}) {
+            const entry = document.createElement('div');
+            entry.className = 'job-entry bg-white p-3 border rounded-md grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-3';
+            entry.innerHTML = `
+                <div class="col-span-2 sm:col-span-4 lg:col-span-2"><label class="block text-xs font-medium">Position (पद)</label><input type="text" name="post" value="${job.post || ''}" class="w-full p-1.5 border rounded-md mt-1 text-sm" required></div>
+                <div><label class="block text-xs font-medium">Male</label><input type="number" name="male" value="${job.male || ''}" class="w-full p-1.5 border rounded-md mt-1 text-sm"></div>
+                <div><label class="block text-xs font-medium">Female</label><input type="number" name="female" value="${job.female || ''}" class="w-full p-1.5 border rounded-md mt-1 text-sm"></div>
+                <div><label class="block text-xs font-medium">Qualification</label><input type="text" name="qualification" value="${job.qualification || 'सम्बन्धित काममा दक्ष'}" class="w-full p-1.5 border rounded-md mt-1 text-sm"></div>
+                <div><label class="block text-xs font-medium">Salary (Foreign)</label><input type="number" step="0.01" name="salary" value="${job.salary || ''}" class="w-full p-1.5 border rounded-md mt-1 text-sm" required></div>
+                <div><label class="block text-xs font-medium">Salary (NPR)</label><input type="number" name="salaryNpr" value="${job.salaryNpr || ''}" class="w-full p-1.5 border rounded-md mt-1 text-sm"></div>
+                <div><label class="block text-xs font-medium">Overtime</label><input type="text" name="overtime" value="${job.overtime || 'कम्पनीको नियमानुसार'}" class="w-full p-1.5 border rounded-md mt-1 text-sm"></div>
+                <div><label class="block text-xs font-medium">Hrs/Day</label><input type="number" name="workHours" value="${job.workHours || 8}" class="w-full p-1.5 border rounded-md mt-1 text-sm"></div>
+                <div><label class="block text-xs font-medium">Days/Wk</label><input type="number" name="workDays" value="${job.workDays || 6}" class="w-full p-1.5 border rounded-md mt-1 text-sm"></div>
+                <div class="col-span-2 sm:col-span-1"><label class="block text-xs font-medium">Food</label><select name="food" class="w-full p-1.5 border rounded-md mt-1 text-sm"><option value="छ" ${job.food === 'छ' ? 'selected' : ''}>छ</option><option value="छैन" ${job.food === 'छैन' ? 'selected' : ''}>छैन</option></select></div>
+                <div class="col-span-2 sm:col-span-1"><label class="block text-xs font-medium">Accomm.</label><select name="accommodation" class="w-full p-1.5 border rounded-md mt-1 text-sm"><option value="छ" ${job.accommodation === 'छ' ? 'selected' : ''}>छ</option><option value="छैन" ${job.accommodation === 'छैन' ? 'selected' : ''}>छैन</option></select></div>
+                <div><label class="block text-xs font-medium">Contract (Yrs)</label><input type="number" name="contract" value="${job.contract || 2}" class="w-full p-1.5 border rounded-md mt-1 text-sm"></div>
+                <button type="button" class="remove-job-btn h-9 mt-auto bg-red-500 text-white rounded-md hover:bg-red-600 text-sm col-span-2 sm:col-span-4 lg:col-span-1">Remove Job</button>
+            `;
+            jobListNode.appendChild(entry);
+        }
+        
+        document.getElementById('add-company-btn').addEventListener('click', () => addCompanyBlock());
+
+        companyList.addEventListener('click', e => {
+            if (e.target.classList.contains('remove-company-btn')) {
+                e.target.closest('.company-block').remove();
+            }
+            if (e.target.classList.contains('add-job-btn')) {
+                const jobListNode = e.target.previousElementSibling;
+                addJobEntry(jobListNode);
+            }
+            if (e.target.classList.contains('remove-job-btn')) {
+                e.target.closest('.job-entry').remove();
+            }
+        });
+
+        // --- Form Submission & Data Collection ---
+        adForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(adForm);
+            state.adData = {
+                isReAdvertisement: formData.get('isReAdvertisement'),
+                interviewDate: formData.get('interviewDate'),
+                interviewPlace: formData.get('interviewPlace'),
+                medicalHome: formData.get('medicalHome'),
+                medicalAbroad: formData.get('medicalAbroad'),
+                lifeInsurance: formData.get('lifeInsurance'),
+                serviceCharge: formData.get('serviceCharge'),
+                companies: []
+            };
+
+            const companyBlocks = companyList.querySelectorAll('.company-block');
+            companyBlocks.forEach(block => {
+                const companyData = {
+                    country: block.querySelector('[name="country"]').value,
+                    name: block.querySelector('[name="company"]').value,
+                    city: block.querySelector('[name="city"]').value,
+                    preApprovalDate: block.querySelector('[name="preApprovalDate"]').value,
+                    chalaniNo: block.querySelector('[name="chalaniNo"]').value,
+                    ltNo: block.querySelector('[name="ltNo"]').value,
+                    jobs: []
+                };
+
+                const jobEntries = block.querySelectorAll('.job-entry');
+                jobEntries.forEach(entry => {
+                    companyData.jobs.push({
+                        post: entry.querySelector('[name="post"]').value,
+                        male: entry.querySelector('[name="male"]').value || 0,
+                        female: entry.querySelector('[name="female"]').value || 0,
+                        qualification: entry.querySelector('[name="qualification"]').value,
+                        salary: entry.querySelector('[name="salary"]').value,
+                        salaryNpr: entry.querySelector('[name="salaryNpr"]').value,
+                        overtime: entry.querySelector('[name="overtime"]').value,
+                        workHours: entry.querySelector('[name="workHours"]').value,
+                        workDays: entry.querySelector('[name="workDays"]').value,
+                        food: entry.querySelector('[name="food"]').value,
+                        accommodation: entry.querySelector('[name="accommodation"]').value,
+                        contract: entry.querySelector('[name="contract"]').value,
+                    });
+                });
+                state.adData.companies.push(companyData);
+            });
+            generateAdPreview(state.adData);
+            navigateToStep(3);
+        });
+
+        // --- Ad Preview Generation ---
+        function generateAdPreview(data) {
+            const previewContainer = document.getElementById('ad-preview');
+            const mainCountry = data.companies.length > 0 ? data.companies[0].country : 'Country';
+            let companiesHtml = '';
+
+            data.companies.forEach(company => {
+                let jobRows = '';
+                company.jobs.forEach((job, index) => {
+                    jobRows += `
+                        <tr>
+                            <td>${index + 1}</td>
+                            <td style="text-align: left; padding-left: 4px;">${job.post.toUpperCase()}</td>
+                            <td>${job.male}</td>
+                            <td>${job.female}</td>
+                            <td>${job.qualification}</td>
+                            <td>${company.country.split(' ')[0] || 'CUR'}</td>
+                            <td>${parseFloat(job.salary).toFixed(2)}</td>
+                            <td>${parseFloat(job.salaryNpr).toLocaleString('en-IN')}</td>
+                            <td>${job.overtime}</td>
+                            <td>${job.workHours}</td>
+                            <td>${job.workDays}</td>
+                            <td>${job.food}</td>
+                            <td>${job.accommodation}</td>
+                            <td>${job.contract} वर्ष</td>
+                        </tr>`;
+                });
+
+                companiesHtml += `
+                    <div style="text-align: center; border: 1px solid black; padding: 2px; margin-bottom: 4px;">
+                        <p style="font-size: 8pt; font-weight: bold; margin: 0;">COMPANY: ${company.name.toUpperCase()}</p>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; font-size: 7pt; font-weight: bold; margin-bottom: 4px;">
+                        <span>Pre Approval Date: ${company.preApprovalDate}</span>
+                        <span>Chalani No. ${company.chalaniNo}</span>
+                        <span>LOT No. ${company.ltNo}</span>
+                        <span>City: ${company.city}</span>
+                    </div>
+                    <table style="width: 100%; margin-bottom: 8px;">
+                        <thead>
+                            <tr>
+                                <th rowspan="2">सि. नं.</th> <th rowspan="2">कामदारको पद</th> <th colspan="2">माग संख्या</th> <th rowspan="2">कामदारको न्युनतम योग्यता</th> <th colspan="3">मासिक तलब</th> <th rowspan="2">ओभर टाइम</th> <th rowspan="2">प्रतिदिन काम गर्ने घण्टा</th> <th rowspan="2">हप्तामा काम गर्ने दिन</th> <th rowspan="2">खाने सुविधा</th> <th rowspan="2">बस्ने सुविधा</th> <th rowspan="2">करार अवधि</th>
+                            </tr>
+                            <tr>
+                                <th>पुरुष</th><th>महिला</th><th></th><th>SR</th><th>ने.रू.</th>
+                            </tr>
+                        </thead>
+                        <tbody>${jobRows}</tbody>
+                    </table>
+                `;
+            });
+            
+            const nepaliDate = data.interviewDate ? new Date(data.interviewDate).toLocaleDateString('ne-NP', { year: 'numeric', month: '2-digit', day: '2-digit' }) : '';
+            
+            previewContainer.innerHTML = `
+                <div style="position: relative; text-align: center; margin-bottom: 4px; min-height: 24px;">
+                    <h2 style="font-size: 12pt; font-weight: bold; border: 2px solid black; padding: 2px; margin: 0 auto; display: inline-block;">${mainCountry}मा रोजगारी</h2>
+                    ${data.isReAdvertisement ? '<p style="font-size: 7pt; font-weight: bold; position: absolute; top: 0; right: 0; margin: 0;">पुन: बिज्ञापन</p>' : ''}
+                </div>
+                
+                ${companiesHtml}
+
+                <div style="border: 1px solid black; text-align: center; padding: 3px; margin-bottom:4px; font-weight: bold; font-size: 8pt;">
+                    अन्तरवार्ता मिति ${nepaliDate} गते ${data.interviewPlace}
+                </div>
+                
+                <table style="width:100%; font-size: 6.5pt; text-align:center; margin-bottom: 4px;">
+                    <thead><tr><th>स्वदेशमा गरिने मेडिकल खर्च</th><th>विदेशमा गरिने मेडिकल खर्च</th><th>म्यादी जीवन बिमा</th><th>सेवा शुल्क</th></tr></thead>
+                    <tbody><tr><td>${data.medicalHome}</td><td>${data.medicalAbroad}</td><td>${data.lifeInsurance}</td><td>${data.serviceCharge}</td></tr></tbody>
+                </table>
+                
+                <div style="font-size: 6pt; text-align: justify; line-height: 1.1; border: 1px solid black; padding: 2px;">
+                    <b>वैदेशिक रोजगार विभागबाट गराईएको जानकारी :</b> १. आफ्नो नाममा भिषा प्राप्त भएको सुनिश्चित गर्नुहोस् । २. आफु काम गर्न जाने मुलुकमा रहेको नेपाली कुटनैतिक नियोगको सम्पर्क ठेगाना र फोन नं. हरु साथमा राख्नुहोला । ३. यस विज्ञापनमा उल्लेख भएको सेवा, सुविधा र तलबको बारेमा स्पष्ट हुनुहोस् । ४. विदेश जानु अघि आफु जाने मुलुक, काम दिने कम्पनी, पाउने सेवा तथा सुविधा र अन्य शर्तबारे राम्रो सँग पढेर मात्र सम्झौतापत्रमा हस्ताक्षर गर्नुहोला र सो को एक (१) प्रति आफुसँग राख्नुहोला । ५. काममा विदेश जाँदा नेपालकै विमानस्थल प्रयोग गर्नुहोला, अन्यथा ठगिने सम्भावना हुन्छ । ६. यस विज्ञापन सम्बन्धमा थप केहि बुझ्नुपरेमा बैदेशिक रोजगार विभाग, ताहाचलमा सम्पर्क गर्नुहोला ।
+                </div>
+                
+                <div style="margin-top: 8px; display: flex; justify-content: space-between; align-items: flex-end;">
+                     <img src="https://i.imgur.com/uUaQpS1.png" alt="Manpower Logo" style="height: 35px;"/>
+                    <div class="manpower-details" style="text-align: right;">
+                        <p style="font-weight: bold; font-size: 9pt; margin: 0 0 1px 0;">WORLD NET RECRUITMENT CONSULTANTS (P) LTD.</p>
+                        <p style="margin:0;">P.O. Box: 10666, Chandol-04, Kathmandu, Nepal, Tel: +977-1-4537410, 4529930</p>
+                        <p style="margin:0;">E-mail: worldnetrecruitment@gmail.com, web: www.worldnetrecruitment.com</p>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // --- PDF Download Logic ---
+        document.getElementById('download-pdf-btn').addEventListener('click', function() {
+            const element = document.getElementById('ad-preview');
+            const ltNo = state.adData.companies.length > 0 ? state.adData.companies[0].ltNo : 'new_ad';
+            const opt = {
+                margin:       0.1,
+                filename:     `manpower_ad_${ltNo}.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 3, useCORS: true },
+                jsPDF:        { unit: 'cm', format: [12, 'auto'], orientation: 'portrait' }
+            };
+            html2pdf().set(opt).from(element).save();
+        });
+
+        // --- Initializer ---
+        addCompanyBlock();
+        addCompanyBlock();
+    });
+    </script>
+</body>
+</html>

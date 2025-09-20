@@ -10,6 +10,7 @@
 
   <nav class="nav" id="site-nav">
     <div class="nav-left">
+      <a href="{% url 'home' %}">Home</a>
       <a href="{% url 'store' %}">Browse</a>
       <div class="dropdown">
         <button class="dropbtn">Categories ▾</button>
@@ -24,82 +25,53 @@
       <a href="#about">About</a>
     </div>
     
-    <div class="nav-center">
-      {# This section is now empty but keeps the centering #}
-    </div>
-    
+    {# User Authentication Section - Right side #}
     <div class="nav-right">
-      {# User Authentication Section - Now beside Get Started #}
-      <div class="user-auth">
-        {% if user.is_authenticated %}
-          <div class="dropdown">
-            <button class="dropbtn user-menu">
-              <i class="fas fa-user"></i> {{ user.first_name|default:user.username }}
-            </button>
-            <div class="dropdown-content user-dropdown">
-              <a href="{% url 'user_dashboard' %}">
-                <i class="fas fa-tachometer-alt"></i> Dashboard
-              </a>
-              <a href="{% url 'my_orders' %}">
-                <i class="fas fa-shopping-bag"></i> My Orders
-              </a>
-              <a href="{% url 'my_sales' %}">
-                <i class="fas fa-chart-line"></i> My Sales
-              </a>
-              <a href="{% url 'add_product' %}">
-                <i class="fas fa-plus"></i> Add Product
-              </a>
-              <div class="dropdown-divider"></div>
-              <a href="{% url 'user_logout' %}" class="logout-btn">
-                <i class="fas fa-sign-out-alt"></i> Logout
-              </a>
-            </div>
+      {% if user.is_authenticated %}
+        <div class="dropdown">
+          <button class="dropbtn user-menu">
+            <i class="fas fa-user"></i> {{ user.first_name|default:user.username }}
+          </button>
+          <div class="dropdown-content user-dropdown">
+            <a href="{% url 'user_dashboard' %}">
+              <i class="fas fa-tachometer-alt"></i> Dashboard
+            </a>
+            <a href="{% url 'my_orders' %}">
+              <i class="fas fa-shopping-bag"></i> My Orders
+            </a>
+            <a href="{% url 'my_sales' %}">
+              <i class="fas fa-chart-line"></i> My Sales
+            </a>
+            <a href="{% url 'add_product' %}">
+              <i class="fas fa-plus"></i> Add Product
+            </a>
+            <div class="dropdown-divider"></div>
+            <a href="{% url 'user_logout' %}" class="logout-btn">
+              <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
           </div>
-        {% else %}
-          <a href="{% url 'user_login' %}" class="auth-link">Login</a>
-          <a href="{% url 'user_register' %}" class="btn-primary">Sign Up</a>
-        {% endif %}
-      </div>
-      
-      <a class="btn-primary" href="{% url 'store' %}">Get Started</a>
+        </div>
+      {% else %}
+        <a href="{% url 'user_login' %}" class="auth-link">Login</a>
+        <a href="{% url 'user_register' %}" class="btn-primary">Sign Up</a>
+        <a class="btn-primary" href="{% url 'store' %}">Get Started</a>
+      {% endif %}
     </div>
   </nav>
 </header>
 
 <style>
-  /* Header - Exact same styles from homepage */
-  .header{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:12px 20px;background:rgba(248,250,252,.8);border-bottom:1px solid #eef2f7;backdrop-filter:saturate(180%) blur(8px)}
-  .brand{display:flex;gap:10px;align-items:center;font-weight:700;color:#111827}
+  /* Header - Consistent height across all pages */
+  .header{position:sticky;top:0;z-index:50;display:flex;align-items:center;padding:12px 20px;background:rgba(248,250,252,.8);border-bottom:1px solid #eef2f7;backdrop-filter:saturate(180%) blur(8px);min-height:64px;box-sizing:border-box}
+  .brand{display:flex;gap:10px;align-items:center;font-weight:700;color:#111827;white-space:nowrap;line-height:1;margin-right:40px}
   .brand .logo{display:inline-block;width:40px;height:40px;background-size:contain;background-repeat:no-repeat;background-position:center}
-  .nav{display:flex;align-items:center;justify-content:space-between;gap:22px;width:100%}
+  .nav{display:flex;align-items:center;justify-content:space-between;width:100%}
+  .nav-left{display:flex;gap:22px;align-items:center}
+  .nav-right{display:flex;gap:12px;align-items:center;align-self:stretch}
   
-  .nav-left {
-    display: flex;
-    align-items: center;
-    gap: 22px;
-    flex-shrink: 0;  /* Prevent shrinking */
-  }
-  
-  .nav-center {
-    display: flex;
-    align-items: center;
-    gap: 22px;
-    flex: 1;  /* Take remaining space */
-    justify-content: center;  /* Center the navigation */
-  }
-  
-  .nav-right {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    flex-shrink: 0;  /* Prevent shrinking */
-    align-self: flex-start;  /* Move up a little */
-    margin-top: -5px;  /* Move up by 5px */
-  }
-  
-  .nav a{color:#6b7280;font-weight:500;font-size:14px;text-decoration:none;transition:color .2s}
+  .nav a{color:#6b7280;font-weight:500;font-size:14px;text-decoration:none;transition:color .2s;line-height:1.2}
   .nav a:hover{color:#111827}
-  .btn-primary{background:#111827;color:#fff;border:0;cursor:pointer;padding:12px 20px;border-radius:999px;font-weight:600;font-size:14px}
+  .btn-primary{background:#111827;color:#fff;border:0;cursor:pointer;padding:8px 16px;border-radius:999px;font-weight:600;font-size:13px;height:40px;box-sizing:border-box}
   .hamburger{display:none;background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:9px 12px;font-size:18px}
 
   /* Dropdown */
@@ -111,26 +83,30 @@
   .dropdown-content a:hover{background:#f3f4f6}
   @media (min-width:769px){ .dropdown:hover .dropdown-content{display:block} }
 
-  /* User Authentication Styles */
-  .user-auth {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-  }
+  /* User Authentication Styles - Now part of main nav */
   
   .user-menu {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
     background: #f3f4f6;
     padding: 8px 16px;
-    border-radius: 20px;
+    border-radius: 16px;
     border: 1px solid #e5e7eb;
     color: #374151;
     font-weight: 500;
     white-space: nowrap;
-    height: 44px;
+    height: 40px;
     box-sizing: border-box;
+    max-width: 180px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 13px;
+    line-height: 1;
+    vertical-align: top;
+    margin-top: -2px;
+    position: relative;
+    top: -1px;
   }
   
   .user-menu:hover {
@@ -184,67 +160,17 @@
     background: #fef2f2 !important;
     color: #dc2626 !important;
   }
-
-  /* Mobile header */
+  
+  /* Mobile responsive styles */
   @media (max-width:768px){
     .hamburger{display:block}
-    .nav{display:none;flex-direction:column;gap:20px}
-    .header.open .nav{display:flex;flex-wrap:wrap;gap:20px;justify-content:center;position:absolute;left:0;right:0;top:54px;padding:20px 16px;background:#fff;border-bottom:1px solid #eef2f7}
-    
-    .nav-left, .nav-center, .nav-right {
-      flex-direction: column;
-      gap: 15px;
-      width: 100%;
-      align-items: center;
-    }
-    
-    .nav-center {
-      flex: none;  /* Remove flex: 1 on mobile */
-    }
-    
-    .nav-right {
-      flex-direction: row;  /* Keep user auth and Get Started side by side on mobile */
-      gap: 10px;  /* Reduce gap on mobile */
-      align-items: center;  /* Ensure they stay on same line */
-      margin-top: 0;  /* Reset margin on mobile */
-    }
-    
-    .user-auth {
-      flex-direction: row;  /* Keep login/signup side by side on mobile */
-      gap: 10px;
-      width: auto;  /* Don't force full width */
-      align-items: center;  /* Keep elements aligned */
-    }
-    
-    .user-menu, .btn-primary {
-      height: 40px;  /* Slightly smaller height on mobile */
-      padding: 8px 16px;  /* Adjust padding for mobile */
-    }
-    
-    .dropdown-content {
-      position: static;
-      box-shadow: none;
-      background: transparent;
-      padding: 8px 0;
-      width: 100%;
-    }
-    
-    .dropdown-content a {
-      text-align: center;
-      padding: 12px;
-      border-radius: 8px;
-      background: #f9fafb;
-      margin-bottom: 5px;
-      justify-content: center;
-    }
-    
-    .user-dropdown {
-      right: auto;
-      left: auto;
-      min-width: auto;
-      width: 100%;
-    }
+    .nav{display:none}
+    .header.open .nav{display:flex;flex-direction:column;gap:20px;justify-content:center;position:absolute;left:0;right:0;top:64px;padding:20px 16px;background:#fff;border-bottom:1px solid #eef2f7;z-index:1000}
+    .header.open .nav-left{flex-direction:column;gap:15px}
+    .header.open .nav-right{flex-direction:column;gap:15px;margin-top:10px}
+    .header.open .user-menu{max-width:none;width:100%;justify-content:center}
   }
+
 </style>
 
 <script>

@@ -6,9 +6,11 @@ name = "pypi"
 [packages]
 django-jazzmin = "*"
 pillow = "*"
-django-admin-honeypot-updated-2021 = "*"
 psycopg2-binary = "*"
 django = "*"
+django-admin-thumbnails = "*"
+whitenoise = "*"
+python-decouple = "*"
 
 [dev-packages]
 

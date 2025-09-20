@@ -57,10 +57,12 @@
   
   .thumbnail-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
     gap: 8px;  /* Reduced from 10px */
     margin-top: 12px;  /* Reduced from 15px */
     padding: 0 1rem;  /* Added padding to align with main image */
+    max-width: 100%;
+    overflow-x: auto;
   }
   
   .thumbnail {
@@ -81,11 +83,58 @@
     transform: scale(1.05);
   }
   
+  /* Handle many gallery images */
+  .thumbnail-grid:has(.thumbnail:nth-child(n+5)) {
+    grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+  }
+  
+  /* Scrollable thumbnails for many images */
+  .thumbnail-grid {
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e0 #f7fafc;
+  }
+  
+  .thumbnail-grid::-webkit-scrollbar {
+    height: 6px;
+  }
+  
+  .thumbnail-grid::-webkit-scrollbar-track {
+    background: #f7fafc;
+    border-radius: 3px;
+  }
+  
+  .thumbnail-grid::-webkit-scrollbar-thumb {
+    background: #cbd5e0;
+    border-radius: 3px;
+  }
+  
+  .thumbnail-grid::-webkit-scrollbar-thumb:hover {
+    background: #a0aec0;
+  }
+  
   /* Better image handling */
   .product-gallery img {
     max-width: 100%;
     height: auto;
     object-fit: contain;
+  }
+  
+  /* Thumbnail list styling */
+  ul.thumb {
+    margin: 0 auto;
+    padding: 0;
+    float: left;
+  }
+  
+  ul.thumb li {
+    list-style: none;
+    margin: 10px;
+  }
+  
+  ul.thumb li img {
+    width: 80px;
+    height: 80px;
+    border: 1px solid grey;
   }
   
   /* Fallback for missing images */
@@ -111,6 +160,34 @@
     font-weight: 800;
     color: #2d3748;
     margin-bottom: 12px;  /* Reduced from 15px */
+  }
+  
+  .product-rating {
+    margin-bottom: 15px;
+  }
+  
+  .product-rating .rating-star {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .product-rating .avg-rating {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  
+  .product-rating .avg-rating i {
+    color: #f39c12;
+    font-size: 1.2rem;
+  }
+  
+  .product-rating .rating-text {
+    color: #718096;
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin-left: 8px;
   }
   
   .product-category {
@@ -162,6 +239,57 @@
     line-height: 1.5;  /* Reduced from 1.6 */
     margin-bottom: 20px;  /* Reduced from 25px */
     font-size: 1rem;  /* Reduced from 1.1rem */
+  }
+  
+  /* Variation Selection Styling */
+  .item-option-select {
+    margin-bottom: 20px;
+  }
+  
+  .item-option-select h6 {
+    color: #2d3748;
+    font-weight: 700;
+    font-size: 1rem;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  
+  .item-option-select h6:before {
+    content: "🎨";
+    font-size: 0.9rem;
+  }
+  
+  .item-option-select:has(select[name="size"]) h6:before {
+    content: "📏";
+  }
+  
+  .item-option-select .form-control {
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 12px 16px;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #4a5568;
+    background: white;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  }
+  
+  .item-option-select .form-control:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    outline: none;
+  }
+  
+  .item-option-select .form-control:hover {
+    border-color: #cbd5e0;
+  }
+  
+  .item-option-select select option {
+    padding: 8px 12px;
+    font-weight: 500;
   }
   
   .product-actions {
@@ -404,11 +532,16 @@
             {% endif %}
           </div>
           
-          {% if product.images %}
+          {% if product.images or product_gallery %}
             <div class="p-3">
               <div class="thumbnail-grid">
-                <img src="{{ product.images.url }}" alt="Thumbnail" class="thumbnail active" onclick="changeImage(this, '{{ product.images.url }}')">
-                <!-- Add more thumbnails if multiple images exist -->
+                {% if product.images %}
+                  <img src="{{ product.images.url }}" alt="Thumbnail" class="thumbnail active" onclick="changeImage(this, '{{ product.images.url }}')">
+                {% endif %}
+                
+                {% for img in product_gallery %}
+                  <img src="{{ img.image.url }}" alt="Gallery Image" class="thumbnail" onclick="changeImage(this, '{{ img.image.url }}')">
+                {% endfor %}
               </div>
             </div>
           {% endif %}
@@ -419,6 +552,20 @@
       <div class="col-lg-6">
         <div class="product-info">
           <h1 class="product-title">{{ product.product_name|default:"Product Name" }}</h1>
+          
+          {# ---------- Product Rating ---------- #}
+          <div class="product-rating">
+            <div class="rating-star">
+              <span class="avg-rating">
+                <i class="fa fa-star{% if product.average_review < 0.5 %}-o{% elif product.average_review < 1 %}-half-o{% endif %}"></i>
+                <i class="fa fa-star{% if product.average_review < 1.5 %}-o{% elif product.average_review < 2 %}-half-o{% endif %}"></i>
+                <i class="fa fa-star{% if product.average_review < 2.5 %}-o{% elif product.average_review < 3 %}-half-o{% endif %}"></i>
+                <i class="fa fa-star{% if product.average_review < 3.5 %}-o{% elif product.average_review < 4 %}-half-o{% endif %}"></i>
+                <i class="fa fa-star{% if product.average_review < 4.5 %}-o{% elif product.average_review < 5 %}-half-o{% endif %}"></i>
+                <span class="rating-text">{{product.average_review}}/5 ({{product.count_review}} reviews)</span>
+              </span>
+            </div>
+          </div>
           
           <div class="product-category">
             <i class="fas fa-tag"></i>
@@ -442,6 +589,36 @@
           <div class="product-description">
             {{ product.description|default:"This is an amazing product from our campus marketplace. Get it while supplies last!" }}
           </div>
+          
+          {# ---------- Color Variation Block ---------- #}
+          {% if product.variations.colors.exists %}
+          <div class="row">
+            <div class="item-option-select">
+              <h6>Choose Color</h6>
+              <select name="color" class="form-control" required>
+                <option value="" disabled selected>Select</option>
+                {% for i in product.variations.colors %}
+                <option value="{{ i.variation_value | lower }}">{{ i.variation_value | capfirst }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+          {% endif %}
+          
+          {# ---------- Size Variation Block ---------- #}
+          {% if product.variations.sizes.exists %}
+          <div class="row">
+            <div class="item-option-select">
+              <h6>Select Size</h6>
+              <select name="size" class="form-control">
+                <option value="" disabled selected>Select</option>
+                {% for i in product.variations.sizes %}
+                <option value="{{ i.variation_value | lower }}">{{ i.variation_value | capfirst }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+          {% endif %}
           
           <div class="product-meta">
             <div class="meta-item">
@@ -504,6 +681,18 @@
   </div>
 </section>
 
+<br />
+
+<div class="row">
+    {% include 'store/includes/reviews.html' %}
+    <!-- col.// -->
+</div>
+<!-- row.// -->
+</div>
+<!-- container .// -->
+</section>
+<!-- ============================ SECTION CONTENT END// ============================ -->
+
 {# ---------- Related Products ---------- #}
 {% if related_products %}
 <section class="related-products">
@@ -539,7 +728,10 @@
   // Image gallery functionality
   function changeImage(thumbnail, imageUrl) {
     // Update main image
-    document.getElementById('mainImage').src = imageUrl;
+    const mainImage = document.getElementById('mainImage');
+    if (mainImage) {
+      mainImage.src = imageUrl;
+    }
     
     // Update active thumbnail
     document.querySelectorAll('.thumbnail').forEach(thumb => {
@@ -547,6 +739,15 @@
     });
     thumbnail.classList.add('active');
   }
+  
+  // Initialize gallery on page load
+  document.addEventListener('DOMContentLoaded', function() {
+    // Check if we have gallery images
+    const thumbnails = document.querySelectorAll('.thumbnail');
+    if (thumbnails.length > 1) {
+      console.log('Gallery initialized with', thumbnails.length, 'images');
+    }
+  });
   
   // Wishlist functionality
   function addToWishlist(productId) {

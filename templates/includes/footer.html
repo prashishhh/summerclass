@@ -26,6 +26,18 @@
   <div class="foot-meta">© {% now "Y" %} Islington Marketplace. All rights reserved.</div>
 </footer>
 
+<!-- ================= FOOTER END // ================= -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+<script>
+  $(document).ready(function(){
+      $('.thumb a').click(function(e){
+          e.preventDefault();
+          $('.mainImage img').attr('src', $(this).attr("href"));
+      })
+  })
+</script>
+
 <style>
   /* Footer - Exact same styles from homepage */
   .footer{background:#111827;color:#e5e7eb;margin-top:60px}

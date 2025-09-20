@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en-us">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+
+    <title>Log in | Django site admin</title>
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="{% static 'vendor/fontawesome-free/css/all.min.css' %}">
+
+    <!-- Bootstrap and AdminLTE -->
+    <link rel="stylesheet" href="{% static 'vendor/adminlte/css/adminlte.min.css' %}">
+
+    <!-- Custom Django fixes -->
+    <link rel="stylesheet" href="{% static 'jazzmin/css/main.css' %}">
+
+    <!-- Favicons -->
+    <link rel="shortcut icon" href="{% static 'vendor/adminlte/img/AdminLTELogo.png' %}" type="image/png">
+    <link rel="icon" href="{% static 'vendor/adminlte/img/AdminLTELogo.png' %}" sizes="32x32" type="image/png">
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+</head>
+<body class="hold-transition jazzmin-login-page">
+    <div class="login-box">
+        <div class="login-logo">
+            <a href="#"><b>Django</b> Administration</a>
+        </div>
+        <!-- /.login-logo -->
+        <div class="card">
+            <div class="card-body">
+                {% include 'includes/alerts.html' %}
+                <p class="login-box-msg">Welcome</p>
+
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="input-group mb-3">
+                        <input type="text" name="username" class="form-control" placeholder="Username" required>
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <span class="fas fa-user"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="input-group mb-3">
+                        <input type="password" name="password" class="form-control" placeholder="Password" required>
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <span class="fas fa-lock"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-primary btn-block">Log In</button>
+                        </div>
+                        <!-- /.col -->
+                    </div>
+                </form>
+
+                <p class="mb-1">
+                    <a href="#" class="text-center">I forgot my password</a>
+                </p>
+            </div>
+            <!-- /.login-card-body -->
+        </div>
+    </div>
+    <!-- /.login-box -->
+
+    <!-- Scripts -->
+    <script src="{% static 'admin/js/vendor/jquery/jquery.js' %}"></script>
+    <script src="{% static 'vendor/bootstrap/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'vendor/adminlte/js/adminlte.min.js' %}"></script>
+</body>
+</html>

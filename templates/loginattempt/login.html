@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Django administration</title>
+    <style>
+        body {
+            font-family: "Lucida Grande", "DejaVu Sans", "Bitstream Vera Sans", Verdana, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f8f8f8;
+        }
+        .header {
+            background: #417690;
+            color: #ffc;
+            padding: 10px 20px;
+            border-bottom: 1px solid #417690;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 20px;
+            font-weight: normal;
+        }
+        .content {
+            padding: 20px;
+            max-width: 400px;
+            margin: 50px auto;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .form-row {
+            margin-bottom: 15px;
+        }
+        .form-row label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .form-row input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            font-size: 14px;
+        }
+        .submit-row {
+            margin-top: 20px;
+        }
+        .submit-row input {
+            background: #417690;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .submit-row input:hover {
+            background: #205067;
+        }
+        .errorlist {
+            color: #ba2121;
+            background: #f8f8f8;
+            border: 1px solid #ba2121;
+            border-radius: 3px;
+            padding: 10px;
+            margin-bottom: 15px;
+        }
+        .breadcrumbs {
+            background: #79aec8;
+            padding: 10px 20px;
+            border-bottom: 1px solid #79aec8;
+        }
+        .breadcrumbs a {
+            color: #417690;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Django administration</h1>
+    </div>
+    
+    <div class="breadcrumbs">
+        <a href="/">Home</a> › <a href="/admin/">Admin</a> › Log in
+    </div>
+    
+    <div class="content">
+        <h2>Log in</h2>
+        
+        {% if messages %}
+            {% for message in messages %}
+                <div class="errorlist">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+        
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-row">
+                <label for="id_username">Username:</label>
+                <input type="text" name="username" id="id_username" required>
+            </div>
+            
+            <div class="form-row">
+                <label for="id_password">Password:</label>
+                <input type="password" name="password" id="id_password" required>
+            </div>
+            
+            <div class="submit-row">
+                <input type="submit" value="Log in">
+            </div>
+        </form>
+    </div>
+</body>
+</html>

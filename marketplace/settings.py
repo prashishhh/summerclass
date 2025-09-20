@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 import os
 from pathlib import Path
+from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -21,20 +22,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-ap7ufx1z&&7d!!*+y4l77jx-e7j=vl$d&2ow$jt1+#nttbn!ir'
+SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config('DEBUG', default=True, cast=bool)
 
-ALLOWED_HOSTS = [
-    'summerclass-ghxx.onrender.com',  # Render URL
-    '127.0.0.1',                      # for local development
-    'localhost',   
-    'prashishsapkota.com.np',
-    'www.prashishsapkota.com.np', 
-    # For eSewa
-    # "http://127.0.0.1:8000"
-]
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1,testserver').split(',')
 
 # For eSewa
 # SITE_URL = "http://127.0.0.1:8000"
@@ -49,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'loginattempt',  # Security: Fake admin login page
     'category.apps.CategoryConfig',
     'accounts.apps.AccountsConfig',
     'store.apps.StoreConfig',
@@ -56,6 +50,7 @@ INSTALLED_APPS = [
     'banner.apps.BannerConfig',
     'carts.apps.CartsConfig',
     'orders.apps.OrdersConfig',
+    'recommendations.apps.RecommendationsConfig',
 ]
 
 MIDDLEWARE = [
@@ -174,13 +169,13 @@ CSRF_TRUSTED_ORIGINS = [
     'https://summerclass-ghxx.onrender.com', 
 ]
 
-EMAIL_HOST =  'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_HOST_USER = 'sapkotaprashish91@gmail.com'
-EMAIL_HOST_PASSWORD = 'rmej brev gllw aqgu'
-EMAIL_USE_TLS = True
+EMAIL_HOST = config('EMAIL_HOST', default='smtp.gmail.com')
+EMAIL_PORT = config('EMAIL_PORT', default=587, cast=int)
+EMAIL_HOST_USER = config('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
+EMAIL_USE_TLS = config('EMAIL_USE_TLS', default=True, cast=bool)
 
 # For eSewa
-ESEWA_PRODUCT_CODE = "EPAYTEST"
-ESEWA_SECRET_KEY = "8gBm/:&EnhH.1/q"
-ESEWA_FORM_URL = "https://rc-epay.esewa.com.np/api/epay/main/v2/form"
+ESEWA_PRODUCT_CODE = config('ESEWA_PRODUCT_CODE', default='EPAYTEST')
+ESEWA_SECRET_KEY = config('ESEWA_SECRET_KEY')
+ESEWA_FORM_URL = config('ESEWA_FORM_URL', default='https://rc-epay.esewa.com.np/api/epay/main/v2/form')
